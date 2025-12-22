@@ -10,7 +10,7 @@ async function getTopVintages() {
   try {
     await dbConnect();
     // Ensure Region is loaded so populate works
-    // @ts-ignore - just side effect import is mostly enough but strictly using the model helps
+    // @ts-expect-error - just side effect import is mostly enough but strictly using the model helps
     const _ = Region;
 
     // Fetch top 6 vintages
@@ -63,6 +63,7 @@ export default async function Home() {
             <div className="text-xs text-purple-400 uppercase tracking-widest">Highest Scores</div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {topVintages.map((v: any) => (
               <Link
                 key={v._id}
