@@ -27,21 +27,23 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     };
 }
 
-async function getVintageData(slug: string, year: number) {
+async function getRegion(slug: string) {
     try {
         await dbConnect();
-
-        const region = await Region.findOne({ slug }).lean() as IRegion | null;
-        if (!region) return null;
-
-        const vintage = await Vintage.findOne({ regionId: (region as any)._id, year }).lean() as IVintage | null;
-
-        // Return structured data
-        return { region, vintage };
+        return await Region.findOne({ slug }).lean() as IRegion | null;
     } catch (e) {
-        console.error("Error fetching vintage data:", e);
-        // In case of DB error, we might still want to show something or let the page handle it
-        throw e;
+        console.error("Critical: Failed to fetch region", e);
+        return null; // This will likely lead to 404 in the page component
+    }
+}
+
+async function getVintage(regionId: any, year: number) {
+    try {
+        // We assume db connection is already active from getRegion
+        return await Vintage.findOne({ regionId, year }).lean() as IVintage | null;
+    } catch (e) {
+        console.error("Non-critical: Failed to fetch vintage data", e);
+        return null; // Return null effectively treating it as "Data Pending"
     }
 }
 
@@ -49,25 +51,15 @@ export default async function VintagePage({ params }: PageParams) {
     const { country, region: regionSlug, year } = await params;
     const yearInt = parseInt(year);
 
-    let data;
-    try {
-        data = await getVintageData(regionSlug, yearInt);
-    } catch (e) {
-        // Fallback for critical DB errors
-        return (
-            <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col items-center justify-center p-4 text-center">
-                <h1 className="text-3xl font-playfair mb-4 text-red-400">System Error</h1>
-                <p className="text-gray-400 mb-8">Unable to load vintage data at this time.</p>
-                <Link href="/" className="px-6 py-2 bg-white/10 rounded-full hover:bg-white/20 transition-all">
-                    Return Home
-                </Link>
-            </div>
-        );
-    }
+    // 1. Fetch Region (Critical)
+    const region = await getRegion(regionSlug);
 
-    if (!data) notFound();
+    // If region doesn't exist, we really can't show anything useful (404)
+    if (!region) notFound();
 
-    const { region, vintage } = data;
+    // 2. Fetch Vintage (Non-critical / Enhancement)
+    // If this fails (timeout, db error), we just show the page without data
+    const vintage = await getVintage((region as any)._id, yearInt);
 
     // Default values if vintage is missing
     const metrics = vintage?.metrics || {} as any;

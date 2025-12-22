@@ -39,15 +39,17 @@ export function calculateGrapeyearScore(metrics: {
     gdd: number;
     rainfall: number;
     diurnal: number;
+    sunshineHours?: number;
+    frostDays?: number;
 }): { score: number; quality: string } {
-    const { gdd, rainfall, diurnal } = metrics;
+    const { gdd, rainfall, diurnal, sunshineHours = 0, frostDays = 0 } = metrics;
 
     let score = 50; // Base score
 
     // GDD Scoring (Ideal range depends on region, but let's assume general optimal 1200-1600 for high quality reds)
-    if (gdd > 1200 && gdd < 1800) score += 20;
-    else if (gdd >= 1000 && gdd <= 1200) score += 10;
-    else if (gdd >= 1800) score += 10; // Hot vintage
+    if (gdd > 1200 && gdd < 1800) score += 15; // Adjusted down slightly to make room for other metrics
+    else if (gdd >= 1000 && gdd <= 1200) score += 5;
+    else if (gdd >= 1800) score += 5; // Hot vintage
 
     // Rainfall Scoring (Too much is bad, too little is drought)
     // Assume generic 'growing season' rainfall ~200-500mm is decent
@@ -58,7 +60,17 @@ export function calculateGrapeyearScore(metrics: {
     // Diurnal Shift Scoring (High shift is good for acid retention)
     if (diurnal > 15) score += 15;
     else if (diurnal > 10) score += 10;
-    else score += 0;
+
+    // Sunshine Scoring
+    // More sun usually means better ripening
+    if (sunshineHours > 1600) score += 10;
+    else if (sunshineHours > 1400) score += 5;
+    // Too much sun?
+    if (sunshineHours > 2200) score -= 5; // Potential sunburn/raisining
+
+    // Frost Penalty (Frost in growing season is devastating)
+    if (frostDays > 3) score -= 20;
+    else if (frostDays > 0) score -= 10;
 
     // Cap score
     score = Math.min(100, Math.max(0, score));
