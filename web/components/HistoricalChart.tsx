@@ -13,7 +13,9 @@ import {
 
 interface HistoricalChartProps {
     currentYear: number;
-    currentMetrics: any;
+    currentMetrics: {
+        gdd: number;
+    };
     // In a real app, we'd pass historical data series here
     // For MVP, passing a mock trend or single comparison point could work, 
     // but let's simulate a trend around the current value
