@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
+import * as dotenv from 'dotenv';
+import path from 'path';
 
-// For script execution, we expect env vars to be passed
-// if not utilizing dotenv
-
+// Load environment variables from .env.local
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 import Region from '../lib/models/Region';
 import Vintage from '../lib/models/Vintage';
@@ -59,13 +60,8 @@ async function seed() {
         const isSouthern = regionData.coordinates[1] < 0;
 
         for (const year of YEARS_TO_FETCH) {
-            const existingVintage = await Vintage.findOne({ regionId: region._id, year });
-            if (existingVintage) {
-                console.log(`Vintage ${year} for ${region.name} already exists. Skipping.`);
-                continue;
-            }
-
-            console.log(`Fetching data for ${region.name} ${year}...`);
+            // Always fetch and update to ensure latest algorithm/metrics
+            console.log(`Updating data for ${region.name} ${year}...`);
 
             // Artificial delay to be nice to the API
             await new Promise(r => setTimeout(r, 500));
@@ -78,34 +74,46 @@ async function seed() {
                     date,
                     maxTemp: daily.temperature_2m_max[i],
                     minTemp: daily.temperature_2m_min[i],
-                    precipitation: daily.precipitation_sum[i]
+                    precipitation: daily.precipitation_sum[i],
+                    sunshine: daily.sunshine_duration[i] // Fetch sunshine (s)
                 }));
 
+                // Calculate metrics
                 const gdd = calculateGDD(processedDaily);
                 const diurnal = calculateDiurnalShift(processedDaily);
                 const totalRain = processedDaily.reduce((acc: number, d: any) => acc + (d.precipitation || 0), 0);
                 const avgTemp = processedDaily.reduce((acc: number, d: any) => acc + ((d.maxTemp + d.minTemp) / 2), 0) / processedDaily.length;
 
-                const { score, quality } = calculateGrapeyearScore({ gdd, rainfall: totalRain, diurnal });
+                // Sunshine in hours (API returns seconds)
+                const sunshineHours = processedDaily.reduce((acc: number, d: any) => acc + (d.sunshine || 0), 0) / 3600;
 
-                await Vintage.create({
-                    regionId: region._id,
-                    year,
-                    grapeyearScore: score,
-                    metrics: {
-                        growingDegreeDays: Math.round(gdd),
-                        totalRainfallMm: Math.round(totalRain * 10) / 10,
-                        diurnalShiftAvg: Math.round(diurnal * 10) / 10,
-                        avgTemperature: Math.round(avgTemp * 10) / 10,
-                        sunshineHours: 0, // Not calculating for now
-                        frostDays: 0 // Not calculating for now
+                // Count frost days (min temp < 0)
+                const frostDays = processedDaily.filter((d: any) => d.minTemp < 0).length;
+
+                const { score, quality } = calculateGrapeyearScore({ gdd, rainfall: totalRain, diurnal, sunshineHours, frostDays });
+
+                await Vintage.findOneAndUpdate(
+                    { regionId: region._id, year },
+                    {
+                        regionId: region._id,
+                        year,
+                        grapeyearScore: score,
+                        metrics: {
+                            growingDegreeDays: Math.round(gdd),
+                            totalRainfallMm: Math.round(totalRain * 10) / 10,
+                            diurnalShiftAvg: Math.round(diurnal * 10) / 10,
+                            avgTemperature: Math.round(avgTemp * 10) / 10,
+                            sunshineHours: Math.round(sunshineHours),
+                            frostDays: frostDays
+                        },
+                        quality,
+                        aiSummary: `Vintage ${year} in ${region.name}: ${quality}. GDD: ${Math.round(gdd)}, Rain: ${Math.round(totalRain)}mm, Sun: ${Math.round(sunshineHours)}h, Frost Days: ${frostDays}.`,
+                        uniqueComposite: `${region._id}_${year}`
                     },
-                    quality,
-                    aiSummary: `Vintage ${year} in ${region.name} was characterized by ${quality} conditions with GDD of ${Math.round(gdd)}.`,
-                    uniqueComposite: `${region._id}_${year}`
-                });
+                    { upsert: true, new: true }
+                );
 
-                console.log(`Saved vintage ${year} for ${region.name} (Score: ${score})`);
+                console.log(`Updated vintage ${year} for ${region.name} (Score: ${score})`);
 
             } catch (err) {
                 console.error(`Error processing ${region.name} ${year}:`, err);
