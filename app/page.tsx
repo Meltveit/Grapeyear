@@ -106,20 +106,23 @@ export default async function Home() {
         <h2 className="text-3xl font-playfair font-bold mb-10 text-center">Explore Top Regions</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {TOP_REGIONS.map((region) => (
-            <a
+            <Link
               key={region.slug}
               href={`/vintages/${region.countryCode.toLowerCase()}/${region.slug}/2023`}
-              className="group relative h-40 rounded-xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all cursor-pointer"
+              className="group relative h-64 rounded-xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all cursor-pointer"
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
-              {/* Fallback pattern if no image */}
-              <div className="absolute inset-0 bg-gray-800 group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />
+              {/* Region Image */}
+              <div
+                className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
+                style={{ backgroundImage: `url(${region.imageUrl})` }}
+              />
 
               <div className="absolute bottom-4 left-4 z-20">
                 <p className="text-xs text-purple-400 uppercase tracking-widest mb-1">{region.country}</p>
                 <h3 className="text-lg font-bold group-hover:text-purple-200 transition-colors">{region.name}</h3>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </section>

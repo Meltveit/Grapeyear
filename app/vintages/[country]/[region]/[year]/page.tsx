@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import dbConnect from '@/lib/mongodb';
-import Vintage from '@/lib/models/Vintage';
-import Region from '@/lib/models/Region';
+import Vintage, { IVintage } from '@/lib/models/Vintage';
+import Region, { IRegion } from '@/lib/models/Region';
 import GrapeyearScore from '@/components/GrapeyearScore';
 import ClimateTable from '@/components/ClimateTable';
 import HistoricalChart from '@/components/HistoricalChart';
@@ -28,23 +28,42 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 }
 
 async function getVintageData(slug: string, year: number) {
-    await dbConnect();
+    try {
+        await dbConnect();
 
-    const region = await Region.findOne({ slug });
-    if (!region) return null;
+        const region = await Region.findOne({ slug }).lean() as IRegion | null;
+        if (!region) return null;
 
-    const vintage = await Vintage.findOne({ regionId: region._id, year });
-    if (!vintage) return { region, vintage: null };
+        const vintage = await Vintage.findOne({ regionId: (region as any)._id, year }).lean() as IVintage | null;
 
-    return { region, vintage };
+        // Return structured data
+        return { region, vintage };
+    } catch (e) {
+        console.error("Error fetching vintage data:", e);
+        // In case of DB error, we might still want to show something or let the page handle it
+        throw e;
+    }
 }
 
 export default async function VintagePage({ params }: PageParams) {
     const { country, region: regionSlug, year } = await params;
-
     const yearInt = parseInt(year);
 
-    const data = await getVintageData(regionSlug, yearInt);
+    let data;
+    try {
+        data = await getVintageData(regionSlug, yearInt);
+    } catch (e) {
+        // Fallback for critical DB errors
+        return (
+            <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col items-center justify-center p-4 text-center">
+                <h1 className="text-3xl font-playfair mb-4 text-red-400">System Error</h1>
+                <p className="text-gray-400 mb-8">Unable to load vintage data at this time.</p>
+                <Link href="/" className="px-6 py-2 bg-white/10 rounded-full hover:bg-white/20 transition-all">
+                    Return Home
+                </Link>
+            </div>
+        );
+    }
 
     if (!data) notFound();
 
@@ -62,6 +81,13 @@ export default async function VintagePage({ params }: PageParams) {
             </div>
         );
     }
+
+    // Safe access to metrics with defaults
+    const metrics = vintage.metrics || {};
+    const gdd = metrics.growingDegreeDays ?? 0;
+    const rainfall = metrics.totalRainfallMm ?? 0;
+    const diurnal = metrics.diurnalShiftAvg ?? 0;
+    const avgTemp = metrics.avgTemperature ?? 0;
 
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white pb-20">
@@ -85,7 +111,7 @@ export default async function VintagePage({ params }: PageParams) {
                     <div className="mt-8 md:mt-0">
                         <div className="text-right hidden md:block">
                             <span className="block text-xs uppercase tracking-widest text-gray-500">Vintage Quality</span>
-                            <span className="text-2xl font-serif italic text-white capitalize">{vintage.quality}</span>
+                            <span className="text-2xl font-serif italic text-white capitalize">{vintage.quality || 'N/A'}</span>
                         </div>
                     </div>
                 </header>
@@ -96,12 +122,12 @@ export default async function VintagePage({ params }: PageParams) {
                     {/* Left Column: Score & Summary */}
                     <div className="lg:col-span-4 space-y-8">
                         <div className="bg-white/5 rounded-2xl p-8 border border-white/10 flex flex-col items-center text-center">
-                            <GrapeyearScore score={vintage.grapeyearScore} quality={vintage.quality} />
+                            <GrapeyearScore score={vintage.grapeyearScore || 0} quality={vintage.quality || 'average'} />
 
                             <div className="mt-8 pt-8 border-t border-white/5 w-full">
                                 <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-4">AI Climate Summary</h3>
                                 <p className="text-gray-300 font-serif leading-relaxed italic">
-                                    "{vintage.aiSummary}"
+                                    "{vintage.aiSummary || 'No summary available.'}"
                                 </p>
                             </div>
                         </div>
@@ -110,7 +136,7 @@ export default async function VintagePage({ params }: PageParams) {
                         <div className="bg-gradient-to-br from-purple-900/10 to-black/20 rounded-2xl p-6 border border-white/5">
                             <h3 className="text-sm font-bold text-gray-400 mb-2">About {region.name}</h3>
                             <p className="text-sm text-gray-500 leading-relaxed">
-                                {region.description}
+                                {region.description || 'No description available.'}
                             </p>
                         </div>
                     </div>
@@ -119,16 +145,16 @@ export default async function VintagePage({ params }: PageParams) {
                     <div className="lg:col-span-8 space-y-8">
                         <ClimateTable
                             metrics={{
-                                gdd: vintage.metrics.growingDegreeDays,
-                                rainfall: vintage.metrics.totalRainfallMm,
-                                diurnal: vintage.metrics.diurnalShiftAvg,
-                                avgTemp: vintage.metrics.avgTemperature
+                                gdd,
+                                rainfall,
+                                diurnal,
+                                avgTemp
                             }}
                         />
 
                         <HistoricalChart
                             currentYear={yearInt}
-                            currentMetrics={{ gdd: vintage.metrics.growingDegreeDays }}
+                            currentMetrics={{ gdd }}
                         />
                     </div>
                 </div>
