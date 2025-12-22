@@ -27,14 +27,32 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     };
 }
 
+import { TOP_REGIONS } from '@/lib/constants';
+
 async function getRegion(slug: string) {
+    // 1. Try DB
     try {
         await dbConnect();
-        return await Region.findOne({ slug }).lean() as IRegion | null;
+        const doc = await Region.findOne({ slug }).lean() as IRegion | null;
+        if (doc) return doc;
     } catch (e) {
-        console.error("Critical: Failed to fetch region", e);
-        return null; // This will likely lead to 404 in the page component
+        console.error("Critical: Failed to fetch region from DB", e);
     }
+
+    // 2. Fallback to Constants (Static Data)
+    // This allows the page to load even if DB is down/slow
+    const staticRegion = TOP_REGIONS.find(r => r.slug === slug);
+    if (staticRegion) {
+        // Return a mock object that matches the shape needed. 
+        // We use 'any' for _id since it doesn't exist on the static object, 
+        // which is handled gracefully by getVintage via the try-catch there.
+        return {
+            ...staticRegion,
+            _id: 'static_fallback'
+        } as unknown as IRegion;
+    }
+
+    return null;
 }
 
 async function getVintage(regionId: any, year: number) {
