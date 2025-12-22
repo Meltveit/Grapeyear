@@ -10,7 +10,7 @@ async function getTopVintages() {
   try {
     await dbConnect();
     // Ensure Region is loaded so populate works
-    // @ts-expect-error - just side effect import is mostly enough but strictly using the model helps
+
     void Region;
 
     // Fetch top 6 vintages
