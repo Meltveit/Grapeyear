@@ -85,6 +85,11 @@ export default async function VintagePage({ params }: PageParams) {
     const rainfall = metrics.totalRainfallMm ?? 0;
     const diurnal = metrics.diurnalShiftAvg ?? 0;
     const avgTemp = metrics.avgTemperature ?? 0;
+
+    // New metrics
+    const sunshineHours = metrics.sunshineHours ?? 0;
+    const frostDays = metrics.frostDays ?? 0;
+
     const score = vintage?.grapeyearScore ?? 0;
     const quality = vintage?.quality ?? 'Data Pending';
     const summary = vintage?.aiSummary ?? 'Historical climate data for this vintage is currently being ingested.';
@@ -155,7 +160,9 @@ export default async function VintagePage({ params }: PageParams) {
                                     gdd,
                                     rainfall,
                                     diurnal,
-                                    avgTemp
+                                    avgTemp,
+                                    sunshineHours,
+                                    frostDays
                                 }}
                             />
 

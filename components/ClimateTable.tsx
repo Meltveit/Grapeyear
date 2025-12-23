@@ -35,6 +35,8 @@ interface ClimateTableProps {
         rainfall: number;
         diurnal: number;
         avgTemp: number;
+        sunshineHours?: number;
+        frostDays?: number;
     };
 }
 
@@ -61,11 +63,25 @@ export default function ClimateTable({ metrics }: ClimateTableProps) {
                     description="Precipitation during the growing season."
                 />
                 <MetricRow
+                    label="Sunshine Hours"
+                    value={metrics.sunshineHours || '-'}
+                    unit="hrs"
+                    icon={<Sun className="w-5 h-5 text-yellow-400" />}
+                    description="Total hours of sunshine during season."
+                />
+                <MetricRow
                     label="Diurnal Shift"
                     value={metrics.diurnal}
                     unit="°C"
                     icon={<Thermometer className="w-5 h-5" />}
                     description="Avg difference between day & night temps."
+                />
+                <MetricRow
+                    label="Frost Days"
+                    value={metrics.frostDays || 0}
+                    unit="days"
+                    icon={<Thermometer className="w-5 h-5 text-blue-400" />}
+                    description="Days below freeezing during season."
                 />
                 <MetricRow
                     label="Average Temperature"
