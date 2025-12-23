@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import SearchBar from '@/components/SearchBar';
 import LiveMetrics from '@/components/LiveMetrics';
+import RegionExplorer from '@/components/RegionExplorer';
 import { TOP_REGIONS } from '@/lib/constants';
 import dbConnect from '@/lib/mongodb';
 import Vintage from '@/lib/models/Vintage';
@@ -116,7 +117,7 @@ export default async function Home() {
       <section className="py-20 container mx-auto px-4">
         <h2 className="text-3xl font-playfair font-bold mb-10 text-center">Explore Top Regions</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {TOP_REGIONS.map((region) => (
+          {TOP_REGIONS.slice(0, 10).map((region) => (
             <Link
               key={region.slug}
               href={`/vintages/${region.countryCode.toLowerCase()}/${region.slug}/2023`}
@@ -136,7 +137,12 @@ export default async function Home() {
             </Link>
           ))}
         </div>
+        <div className="text-center mt-10">
+          <p className="text-gray-500 italic">...and many more below</p>
+        </div>
       </section>
+
+      <RegionExplorer />
 
       {/* Value Props / Stats */}
       <section className="py-20 bg-white/5 border-y border-white/10">
@@ -146,8 +152,8 @@ export default async function Home() {
             <div className="text-gray-400 uppercase tracking-widest text-sm">Years of History</div>
           </div>
           <div className="p-6">
-            <div className="text-4xl font-bold text-purple-500 mb-2">10</div>
-            <div className="text-gray-400 uppercase tracking-widest text-sm">Premium Regions</div>
+            <div className="text-4xl font-bold text-purple-500 mb-2">{TOP_REGIONS.length}+</div>
+            <div className="text-gray-400 uppercase tracking-widest text-sm">Global Regions</div>
           </div>
           <div className="p-6">
             <div className="text-4xl font-bold text-purple-500 mb-2">1M+</div>
