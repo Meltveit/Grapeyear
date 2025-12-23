@@ -15,7 +15,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 1,
     }));
 
-    // 2. Dynamic Vintage Routes
+    // 2. Dynamic Country Routes
+    const uniqueCountries = [...new Set(TOP_REGIONS.map(r => r.country.toLowerCase()))];
+    const countryRoutes = uniqueCountries.map(country => ({
+        url: `${baseUrl}/vintages/${country}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.9,
+    }));
+
+    // 3. Dynamic Vintage Routes
     // This generates URLs for every Region + Year combination we support
     let vintageRoutes: MetadataRoute.Sitemap = [];
 
@@ -29,5 +38,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
         vintageRoutes = [...vintageRoutes, ...regionUrls];
     });
 
-    return [...routes, ...vintageRoutes];
+    return [...routes, ...countryRoutes, ...vintageRoutes];
 }
