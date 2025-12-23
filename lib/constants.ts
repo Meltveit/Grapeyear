@@ -226,6 +226,80 @@ export const TOP_REGIONS = [
         description: 'Terraced vineyards created for Port and dry reds.',
         imageUrl: 'https://images.unsplash.com/photo-1585501815599-2475510667db?q=80&w=800&auto=format&fit=crop'
     },
+
+    // --- NEW ADDITIONS (ROUND 3) ---
+    {
+        slug: 'veneto',
+        name: 'Veneto',
+        country: 'Italy',
+        countryCode: 'IT',
+        coordinates: [10.99, 45.43], // Verona area
+        description: 'Famous for Amarone, Valpolicella and Prosecco.',
+        imageUrl: 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+        slug: 'sicily',
+        name: 'Sicily',
+        country: 'Italy',
+        countryCode: 'IT',
+        coordinates: [14.96, 37.75], // Etna
+        description: 'Volcanic wines from Mount Etna and Nero d\'Avola.',
+        imageUrl: 'https://images.unsplash.com/photo-1548625361-987820063228?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+        slug: 'loire-valley',
+        name: 'Loire Valley',
+        country: 'France',
+        countryCode: 'FR',
+        coordinates: [0.75, 47.4], // Tours area
+        description: 'Diverse styles from Sancerre (Sauvignon Blanc) to Chinon.',
+        imageUrl: 'https://images.unsplash.com/photo-1569485890098-df09bb4df199?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+        slug: 'provence',
+        name: 'Provence',
+        country: 'France',
+        countryCode: 'FR',
+        coordinates: [6.0, 43.5],
+        description: 'The spiritual home of Rosé.',
+        imageUrl: 'https://images.unsplash.com/photo-1528659546452-9b2f67644917?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+        slug: 'margaret-river',
+        name: 'Margaret River',
+        country: 'Australia',
+        countryCode: 'AU',
+        coordinates: [115.1, -33.9],
+        description: 'Elegant Cabernet and Chardonnay near the Indian Ocean.',
+        imageUrl: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+        slug: 'rheingau',
+        name: 'Rheingau',
+        country: 'Germany',
+        countryCode: 'DE',
+        coordinates: [7.9, 50.0],
+        description: 'Historic Riesling vineyards along the Rhine.',
+        imageUrl: 'https://images.unsplash.com/photo-1563820658760-4def71be582d?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+        slug: 'salta',
+        name: 'Salta',
+        country: 'Argentina',
+        countryCode: 'AR',
+        coordinates: [-66.3, -25.5], // Cafayate
+        description: 'Extreme high-altitude wines, home of Torrontés.',
+        imageUrl: 'https://images.unsplash.com/photo-1534234828569-1f27c7e81e31?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+        slug: 'casablanca-valley',
+        name: 'Casablanca Valley',
+        country: 'Chile',
+        countryCode: 'CL',
+        coordinates: [-71.4, -33.3],
+        description: 'Cool-climate white wines and Pinot Noir by the Pacific.',
+        imageUrl: 'https://images.unsplash.com/photo-1582848386829-d5c2250284ae?q=80&w=800&auto=format&fit=crop'
+    },
 ];
 
 export const YEARS_TO_FETCH = Array.from({ length: 21 }, (_, i) => 2025 - i); // [2025, 2024, ..., 2005]
