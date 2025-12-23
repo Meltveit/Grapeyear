@@ -7,7 +7,7 @@ import GrapeyearScore from '@/components/GrapeyearScore';
 import ClimateTable from '@/components/ClimateTable';
 import HistoricalChart from '@/components/HistoricalChart';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PageParams {
     params: Promise<{
@@ -112,7 +112,25 @@ export default async function VintagePage({ params }: PageParams) {
                         <h1 className="text-5xl md:text-7xl font-playfair font-bold text-white mb-2">
                             {region.name}
                         </h1>
-                        <div className="text-4xl font-light text-gray-400">{yearInt}</div>
+                        <div className="flex items-center gap-4 text-4xl font-light text-gray-400">
+                            <Link
+                                href={`/vintages/${country}/${regionSlug}/${yearInt - 1}`}
+                                className="p-2 hover:text-white transition-colors"
+                                aria-label="Previous Year"
+                            >
+                                <ChevronLeft className="w-8 h-8" />
+                            </Link>
+                            <span>{yearInt}</span>
+                            {yearInt < 2025 && (
+                                <Link
+                                    href={`/vintages/${country}/${regionSlug}/${yearInt + 1}`}
+                                    className="p-2 hover:text-white transition-colors"
+                                    aria-label="Next Year"
+                                >
+                                    <ChevronRight className="w-8 h-8" />
+                                </Link>
+                            )}
+                        </div>
                     </div>
                     <div className="mt-8 md:mt-0">
                         <div className="text-right hidden md:block">

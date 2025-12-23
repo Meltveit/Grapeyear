@@ -91,4 +91,4 @@ export const TOP_REGIONS = [
     },
 ];
 
-export const YEARS_TO_FETCH = Array.from({ length: 20 }, (_, i) => 2024 - i); // [2024, 2023, ..., 2005]
+export const YEARS_TO_FETCH = Array.from({ length: 21 }, (_, i) => 2025 - i); // [2025, 2024, ..., 2005]
