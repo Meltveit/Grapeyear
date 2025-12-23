@@ -9,20 +9,31 @@ import Region from '@/lib/models/Region'; // Ensure model is registered
 async function getTopVintages() {
   try {
     await dbConnect();
-    // Ensure Region is loaded so populate works
-
     void Region;
 
-    // Fetch top 6 vintages
-    const vintages = await Vintage.find({ grapeyearScore: { $gte: 90 } })
+    // 1. Fetch top 40 high-scoring vintages to get a good candidate pool
+    const vintages = await Vintage.find({ grapeyearScore: { $gte: 85 } })
       .sort({ grapeyearScore: -1 })
-      .limit(6)
+      .limit(40)
       .populate('regionId')
-      .lean(); // lighter plain JS objects
+      .lean();
 
-    // strict serialization for Next.js props if needed, but in server component it's ok usually
-    // cleaning up _id to string for safety
-    return JSON.parse(JSON.stringify(vintages));
+    // 2. Deduplicate manually: Keep only the HIGHEST scoring vintage per region
+    // This effectively gives us "Top Year for Each Region"
+    const seenRegions = new Set();
+    const diverseVintages: any[] = []; // Explicit type to allow push
+
+    for (const v of vintages as any[]) {
+      const rName = v.regionId?.name;
+      if (!seenRegions.has(rName)) {
+        seenRegions.add(rName);
+        diverseVintages.push(v);
+        // Stop if we have 6 nice cards
+        if (diverseVintages.length >= 6) break;
+      }
+    }
+
+    return JSON.parse(JSON.stringify(diverseVintages));
   } catch (e) {
     console.error("Failed to fetch top vintages", e);
     return [];
