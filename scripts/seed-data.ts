@@ -8,7 +8,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 import Region from '../lib/models/Region';
 import Vintage from '../lib/models/Vintage';
 import { TOP_REGIONS, YEARS_TO_FETCH } from '../lib/constants';
-import { calculateGDD, calculateDiurnalShift, calculateGrapeyearScore } from '../lib/calculations';
+import { calculateGDD, calculateDiurnalShift, calculateGrapeyearScore, generateVintageSummary } from '../lib/calculations';
 
 // Mocking the DB connect for script usage if different from lib
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -92,6 +92,14 @@ async function seed() {
 
                 const { score, quality } = calculateGrapeyearScore({ gdd, rainfall: totalRain, diurnal, sunshineHours, frostDays });
 
+                const aiSummary = generateVintageSummary({
+                    gdd,
+                    rainfall: totalRain,
+                    sunshineHours,
+                    frostDays,
+                    regionName: region.name
+                });
+
                 await Vintage.findOneAndUpdate(
                     { regionId: region._id, year },
                     {
@@ -107,7 +115,7 @@ async function seed() {
                             frostDays: frostDays
                         },
                         quality,
-                        aiSummary: `Vintage ${year} in ${region.name}: ${quality}. GDD: ${Math.round(gdd)}, Rain: ${Math.round(totalRain)}mm, Sun: ${Math.round(sunshineHours)}h, Frost Days: ${frostDays}.`,
+                        aiSummary,
                         uniqueComposite: `${region._id}_${year}`
                     },
                     { upsert: true, new: true }
