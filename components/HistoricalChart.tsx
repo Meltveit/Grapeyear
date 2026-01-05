@@ -11,46 +11,35 @@ import {
     Legend
 } from 'recharts';
 
+interface HistoricalDataPoint {
+    year: number;
+    gdd: number;
+    score: number;
+}
+
 interface HistoricalChartProps {
     currentYear: number;
-    currentMetrics: {
-        gdd: number;
-    };
-    // In a real app, we'd pass historical data series here
-    // For MVP, passing a mock trend or single comparison point could work, 
-    // but let's simulate a trend around the current value
+    data: HistoricalDataPoint[];
 }
 
-// Mock data generator for visual effect in MVP if no real historical series passed yet
-function generateMockData(year: number, currentGdd: number) {
-    const data = [];
-    for (let i = year - 9; i <= year; i++) {
-        // Generate some random fluctuation around currentGdd
-        const noise = (Math.random() - 0.5) * 200;
-        let gdd = currentGdd + noise;
+export default function HistoricalChart({ currentYear, data }: HistoricalChartProps) {
+    // Calculate a simple average GDD for the reference line
+    const avgGdd = data.length > 0
+        ? Math.round(data.reduce((acc, curr) => acc + curr.gdd, 0) / data.length)
+        : 1350;
 
-        // Trend warmer?
-        gdd = gdd - ((year - i) * 10);
-
-        data.push({
-            year: i,
-            gdd: Math.round(gdd),
-            avg: 1350 // Mock 10-year average line
-        });
-    }
-    return data;
-}
-
-export default function HistoricalChart({ currentYear, currentMetrics }: HistoricalChartProps) {
-    const data = generateMockData(currentYear, currentMetrics.gdd);
+    const chartData = data.map(d => ({
+        ...d,
+        avg: avgGdd
+    })).sort((a, b) => a.year - b.year);
 
     return (
         <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 p-6">
-            <h3 className="text-lg font-playfair font-bold text-white mb-6">Historical Context (10 Years)</h3>
+            <h3 className="text-lg font-playfair font-bold text-white mb-6">Historical Context ({data.length} Years)</h3>
 
             <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={data}>
+                    <LineChart data={chartData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
                         <XAxis
                             dataKey="year"
@@ -93,7 +82,7 @@ export default function HistoricalChart({ currentYear, currentMetrics }: Histori
                 </ResponsiveContainer>
             </div>
             <p className="text-sm text-gray-500 mt-4 text-center">
-                Comparison of {currentYear} growing season heat accumulation vs regional average.
+                Comparison of growing season heat accumulation vs regional average.
             </p>
         </div>
     );

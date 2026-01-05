@@ -120,7 +120,7 @@ export default async function Home() {
           {TOP_REGIONS.slice(0, 10).map((region) => (
             <Link
               key={region.slug}
-              href={`/vintages/${region.countryCode.toLowerCase()}/${region.slug}/2023`}
+              href={`/vintages/${region.countryCode.toLowerCase()}/${region.slug}/${new Date().getFullYear() - 1}`}
               className="group relative h-64 rounded-xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all cursor-pointer"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />

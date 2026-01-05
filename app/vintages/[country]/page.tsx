@@ -72,6 +72,9 @@ export default async function CountryPage({ params }: PageParams) {
         ]
     };
 
+    const currentYear = new Date().getFullYear();
+    const defaultVintage = currentYear - 1;
+
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-purple-500/30 pb-20">
             <script
@@ -98,7 +101,7 @@ export default async function CountryPage({ params }: PageParams) {
                     {regions.map((region) => (
                         <Link
                             key={region.slug}
-                            href={`/vintages/${region.countryCode.toLowerCase()}/${region.slug}/2023`}
+                            href={`/vintages/${region.countryCode.toLowerCase()}/${region.slug}/${defaultVintage}`}
                             className="group relative h-80 rounded-2xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all block"
                         >
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />

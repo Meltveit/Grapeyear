@@ -8,6 +8,7 @@ import ClimateTable from '@/components/ClimateTable';
 import HistoricalChart from '@/components/HistoricalChart';
 import Link from 'next/link';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { TOP_REGIONS } from '@/lib/constants';
 
 interface PageParams {
     params: Promise<{
@@ -47,8 +48,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     };
 }
 
-import { TOP_REGIONS } from '@/lib/constants';
-
 async function getRegion(slug: string) {
     // 1. Try DB
     try {
@@ -60,12 +59,8 @@ async function getRegion(slug: string) {
     }
 
     // 2. Fallback to Constants (Static Data)
-    // This allows the page to load even if DB is down/slow
     const staticRegion = TOP_REGIONS.find(r => r.slug === slug);
     if (staticRegion) {
-        // Return a mock object that matches the shape needed. 
-        // We use 'any' for _id since it doesn't exist on the static object, 
-        // which is handled gracefully by getVintage via the try-catch there.
         return {
             ...staticRegion,
             _id: 'static_fallback'
@@ -77,11 +72,30 @@ async function getRegion(slug: string) {
 
 async function getVintage(regionId: any, year: number) {
     try {
-        // We assume db connection is already active from getRegion
         return await Vintage.findOne({ regionId, year }).lean() as IVintage | null;
     } catch (e) {
         console.error("Non-critical: Failed to fetch vintage data", e);
-        return null; // Return null effectively treating it as "Data Pending"
+        return null;
+    }
+}
+
+async function getHistoricalVintages(regionId: any, currentYear: number) {
+    try {
+        // Fetch last 10 years
+        const startYear = currentYear - 9;
+        const vintages = await Vintage.find({
+            regionId,
+            year: { $gte: startYear, $lte: currentYear }
+        }).sort({ year: 1 }).lean();
+
+        return vintages.map((v: any) => ({
+            year: v.year,
+            gdd: v.metrics?.growingDegreeDays || 0,
+            score: v.grapeyearScore
+        }));
+    } catch (e) {
+        console.error("Failed to fetch historical data", e);
+        return [];
     }
 }
 
@@ -92,12 +106,13 @@ export default async function VintagePage({ params }: PageParams) {
     // 1. Fetch Region (Critical)
     const region = await getRegion(regionSlug);
 
-    // If region doesn't exist, we really can't show anything useful (404)
     if (!region) notFound();
 
-    // 2. Fetch Vintage (Non-critical / Enhancement)
-    // If this fails (timeout, db error), we just show the page without data
+    // 2. Fetch Vintage Data
     const vintage = await getVintage((region as any)._id, yearInt);
+
+    // 3. Fetch Historical Data
+    const historicalData = await getHistoricalVintages((region as any)._id, yearInt);
 
     // Default values if vintage is missing
     const metrics = vintage?.metrics || {} as any;
@@ -105,8 +120,6 @@ export default async function VintagePage({ params }: PageParams) {
     const rainfall = metrics.totalRainfallMm ?? 0;
     const diurnal = metrics.diurnalShiftAvg ?? 0;
     const avgTemp = metrics.avgTemperature ?? 0;
-
-    // New metrics
     const metricsSunshineHours = metrics.sunshineHours ?? 0;
     const metricsFrostDays = metrics.frostDays ?? 0;
 
@@ -115,7 +128,7 @@ export default async function VintagePage({ params }: PageParams) {
     const summary = vintage?.aiSummary ?? 'Historical climate data for this vintage is currently being ingested.';
     const description = region.description || 'No description available.';
 
-    // Re-calculate local image for Schema (same logic as metadata)
+    // Re-calculate local image for Schema
     const staticRegion = TOP_REGIONS.find(r => r.slug === regionSlug);
     const ogImage = staticRegion?.imageUrl || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200';
 
@@ -157,7 +170,7 @@ export default async function VintagePage({ params }: PageParams) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            {/* Navbar simple override */}
+
             <nav className="p-6">
                 <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" /> Back to Search
@@ -181,21 +194,19 @@ export default async function VintagePage({ params }: PageParams) {
                                 <ChevronLeft className="w-8 h-8" />
                             </Link>
                             <span>{yearInt}</span>
-                            {yearInt < 2025 && (
-                                <Link
-                                    href={`/vintages/${country}/${regionSlug}/${yearInt + 1}`}
-                                    className="p-2 hover:text-white transition-colors"
-                                    aria-label="Next Year"
-                                >
-                                    <ChevronRight className="w-8 h-8" />
-                                </Link>
-                            )}
+                            {/* Allow next year navigation freely or limit logic if desired */}
+                            <Link
+                                href={`/vintages/${country}/${regionSlug}/${yearInt + 1}`}
+                                className="p-2 hover:text-white transition-colors"
+                                aria-label="Next Year"
+                            >
+                                <ChevronRight className="w-8 h-8" />
+                            </Link>
                         </div>
                     </div>
                     <div className="mt-8 md:mt-0">
                         <div className="text-right hidden md:block">
                             <span className="block text-xs uppercase tracking-widest text-gray-500">Vintage Quality</span>
-                            {/* If quality is N/A (Data Pending), style it differently */}
                             <span className={`text-2xl font-serif italic capitalize ${!vintage ? 'text-gray-500' : 'text-white'}`}>
                                 {quality}
                             </span>
@@ -203,15 +214,11 @@ export default async function VintagePage({ params }: PageParams) {
                     </div>
                 </header>
 
-                {/* Dashboard Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
                     {/* Left Column: Score & Summary */}
                     <div className="lg:col-span-4 space-y-8">
                         <div className="bg-white/5 rounded-2xl p-8 border border-white/10 flex flex-col items-center text-center">
-                            {/* If no vintage, show placeholder score or 0 */}
                             <GrapeyearScore score={score} quality={vintage?.quality || 'average'} />
-
                             <div className="mt-8 pt-8 border-t border-white/5 w-full">
                                 <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-4">AI Climate Summary</h3>
                                 <p className="text-gray-300 font-serif leading-relaxed italic">
@@ -220,7 +227,6 @@ export default async function VintagePage({ params }: PageParams) {
                             </div>
                         </div>
 
-                        {/* Region Info */}
                         <div className="bg-gradient-to-br from-purple-900/10 to-black/20 rounded-2xl p-6 border border-white/5">
                             <h3 className="text-sm font-bold text-gray-400 mb-2">About {region.name}</h3>
                             <p className="text-sm text-gray-500 leading-relaxed">
@@ -231,7 +237,6 @@ export default async function VintagePage({ params }: PageParams) {
 
                     {/* Right Column: Detailed Data */}
                     <div className="lg:col-span-8 space-y-8">
-                        {/* Only show data visualization if we have at least some metrics or if we want to show empty state */}
                         <div className={`transition-opacity ${!vintage ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
                             <ClimateTable
                                 metrics={{
@@ -247,7 +252,7 @@ export default async function VintagePage({ params }: PageParams) {
                             <div className="relative">
                                 <HistoricalChart
                                     currentYear={yearInt}
-                                    currentMetrics={{ gdd }}
+                                    data={historicalData}
                                 />
                                 {!vintage && (
                                     <div className="absolute inset-0 flex items-center justify-center">
