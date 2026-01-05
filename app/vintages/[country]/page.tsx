@@ -21,6 +21,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     );
     const ogImage = regions[0]?.imageUrl || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200';
 
+    const canonicalPath = regions[0]?.country.toLowerCase() || country.toLowerCase();
+
     return {
         title: `Wines of ${countryName} | Grapeyear`,
         description: `Explore the top wine regions of ${countryName}. Detailed vintage reports and climate data.`,
@@ -28,6 +30,9 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
             title: `Wines of ${countryName} | Grapeyear`,
             description: `Explore the top wine regions of ${countryName}.`,
             images: [{ url: ogImage, width: 1200, height: 630 }],
+        },
+        alternates: {
+            canonical: `/vintages/${canonicalPath}`,
         }
     };
 }
@@ -48,8 +53,31 @@ export default async function CountryPage({ params }: PageParams) {
 
     const countryName = regions[0].country; // Get nice display name from first match
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: 'https://www.grapeyear.com'
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: countryName,
+                item: `https://www.grapeyear.com/vintages/${countryName.toLowerCase()}`
+            }
+        ]
+    };
+
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-purple-500/30 pb-20">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <nav className="p-6">
                 <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home

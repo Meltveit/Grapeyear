@@ -33,6 +33,9 @@ export const metadata: Metadata = {
     images: ['https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200'],
   },
   metadataBase: new URL('https://www.grapeyear.com'),
+  alternates: {
+    canonical: './',
+  },
 };
 
 export default function RootLayout({
@@ -40,9 +43,25 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Grapeyear',
+    url: 'https://www.grapeyear.com',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://www.grapeyear.com/search?q={search_term_string}',
+      'query-input': 'required name=search_term_string'
+    }
+  };
+
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="bg-[#0a0a0a] text-white antialiased font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {children}
         <Analytics />
       </body>

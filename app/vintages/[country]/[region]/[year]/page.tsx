@@ -25,6 +25,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     const staticRegion = TOP_REGIONS.find(r => r.slug === region);
     const ogImage = staticRegion?.imageUrl || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200';
 
+    const canonicalCountryCode = staticRegion?.countryCode.toLowerCase() || 'unknown';
+
     return {
         title: `${regionName} ${year} Vintage Report | Grapeyear`,
         description: `Detailed climate analysis for ${regionName} ${year}. See GDD, rainfall, and AI-driven vintage quality assessment.`,
@@ -38,6 +40,9 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
             title: `${regionName} ${year} | Vintage Intelligence`,
             description: `Detailed climate report for ${regionName} ${year}.`,
             images: [ogImage],
+        },
+        alternates: {
+            canonical: `/vintages/${canonicalCountryCode}/${region}/${year}`,
         }
     };
 }
@@ -102,16 +107,56 @@ export default async function VintagePage({ params }: PageParams) {
     const avgTemp = metrics.avgTemperature ?? 0;
 
     // New metrics
-    const sunshineHours = metrics.sunshineHours ?? 0;
-    const frostDays = metrics.frostDays ?? 0;
+    const metricsSunshineHours = metrics.sunshineHours ?? 0;
+    const metricsFrostDays = metrics.frostDays ?? 0;
 
     const score = vintage?.grapeyearScore ?? 0;
     const quality = vintage?.quality ?? 'Data Pending';
     const summary = vintage?.aiSummary ?? 'Historical climate data for this vintage is currently being ingested.';
     const description = region.description || 'No description available.';
 
+    // Re-calculate local image for Schema (same logic as metadata)
+    const staticRegion = TOP_REGIONS.find(r => r.slug === regionSlug);
+    const ogImage = staticRegion?.imageUrl || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200';
+
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: `${region.name} ${year} Vintage`,
+        description: summary,
+        image: ogImage,
+        brand: {
+            '@type': 'Brand',
+            name: 'Grapeyear'
+        },
+        review: {
+            '@type': 'Review',
+            reviewRating: {
+                '@type': 'Rating',
+                ratingValue: score,
+                bestRating: 100,
+                worstRating: 0
+            },
+            author: {
+                '@type': 'Organization',
+                name: 'Grapeyear AI'
+            }
+        },
+        aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: score,
+            bestRating: 100,
+            worstRating: 0,
+            ratingCount: 1
+        }
+    };
+
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white pb-20">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* Navbar simple override */}
             <nav className="p-6">
                 <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white transition-colors">
@@ -194,8 +239,8 @@ export default async function VintagePage({ params }: PageParams) {
                                     rainfall,
                                     diurnal,
                                     avgTemp,
-                                    sunshineHours,
-                                    frostDays
+                                    sunshineHours: metricsSunshineHours,
+                                    frostDays: metricsFrostDays
                                 }}
                             />
 
