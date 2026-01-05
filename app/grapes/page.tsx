@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { GRAPE_VARIETIES } from '@/lib/grapes';
 import Link from 'next/link';
 import { ArrowLeft, Droplets, Thermometer, Mountain, Sprout } from 'lucide-react';
@@ -34,9 +35,12 @@ export default function GrapesPage() {
                             {/* Image Header */}
                             <div className="h-48 overflow-hidden relative">
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent z-10" />
-                                <div
-                                    className="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
-                                    style={{ backgroundImage: `url(${grape.imageUrl})` }}
+                                <Image
+                                    src={grape.imageUrl}
+                                    alt={grape.name}
+                                    fill
+                                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 />
                                 <div className="absolute bottom-4 left-4 z-20">
                                     <h2 className="text-2xl font-playfair font-bold">{grape.name}</h2>
