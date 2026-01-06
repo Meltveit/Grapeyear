@@ -128,27 +128,31 @@ export default async function RecommendationSidebar({ currentWineryId, currentRe
                     <Link
                         key={winery._id}
                         href={`/wineries/${winery.slug}`}
-                        className="flex gap-3 items-center group hover:bg-white/5 p-2 rounded-lg transition-colors -mx-2"
+                        className="block relative h-48 rounded-xl overflow-hidden group border border-white/10"
                     >
-                        {/* Thumbnail */}
-                        <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-white/10">
-                            {winery.imageUrl ? (
-                                <Image
-                                    src={winery.imageUrl}
-                                    alt={winery.name}
-                                    fill
-                                    className="object-cover group-hover:scale-110 transition-transform"
-                                />
-                            ) : (
-                                <div className="absolute inset-0 flex items-center justify-center text-xs text-purple-500 font-bold">GY</div>
-                            )}
-                        </div>
+                        {/* Background Image */}
+                        {winery.imageUrl ? (
+                            <Image
+                                src={winery.imageUrl}
+                                alt={winery.name}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                        ) : (
+                            <div className="absolute inset-0 bg-white/10 flex items-center justify-center">
+                                <span className="text-purple-500 font-playfair font-bold text-2xl">GY</span>
+                            </div>
+                        )}
 
-                        {/* Info */}
-                        <div className="min-w-0">
-                            <h4 className="font-bold text-sm text-gray-200 group-hover:text-white truncate">{winery.name}</h4>
-                            <div className="text-xs text-gray-500 flex items-center gap-1 truncate">
-                                <span>{winery.regionName}, {winery.country}</span>
+                        {/* Overlay Gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-70 transition-opacity" />
+
+                        {/* Content Overlay */}
+                        <div className="absolute bottom-0 left-0 w-full p-4 transform translate-y-1 group-hover:translate-y-0 transition-transform">
+                            <h4 className="font-bold text-lg text-white font-playfair leading-tight mb-1 group-hover:text-purple-300 transition-colors">{winery.name}</h4>
+                            <div className="flex items-center text-xs text-gray-300 font-medium uppercase tracking-wider">
+                                <MapPin size={12} className="mr-1 text-purple-400" />
+                                <span className="truncate">{winery.regionName}, {winery.country}</span>
                             </div>
                         </div>
                     </Link>
