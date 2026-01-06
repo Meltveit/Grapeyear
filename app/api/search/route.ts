@@ -39,7 +39,7 @@ export async function GET(request: Request) {
                     vintageResults.push({
                         name: `${r.name} ${year} Vintage`,
                         type: 'vintage',
-                        url: `/vintages/${(r as any).countryCode?.toLowerCase() || 'fr'}/${r.slug}/${year}`,
+                        url: `/vintages/${(r as any).country.toLowerCase().replace(/ /g, '-')}/${r.slug}/${year}`,
                         imageUrl: r.imageUrl,
                         year: year,
                         country: (r as any).country

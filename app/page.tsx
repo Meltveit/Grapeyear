@@ -132,7 +132,7 @@ export default async function Home() {
             {topVintages.map((v: TopVintageProps) => (
               <Link
                 key={v._id}
-                href={`/vintages/${v.regionId.countryCode.toLowerCase()}/${v.regionId.slug}/${v.year}`}
+                href={`/vintages/${v.regionId.country.toLowerCase().replace(/ /g, '-')}/${v.regionId.slug}/${v.year}`}
                 className="group flex items-center bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-4 transition-all"
               >
                 <div className={`
@@ -161,7 +161,7 @@ export default async function Home() {
           {TOP_REGIONS.slice(0, 10).map((region) => (
             <Link
               key={region.slug}
-              href={`/vintages/${region.countryCode.toLowerCase()}/${region.slug}/${new Date().getFullYear() - 1}`}
+              href={`/vintages/${region.country.toLowerCase().replace(/ /g, '-')}/${region.slug}/${new Date().getFullYear() - 1}`}
               className="group relative h-64 rounded-xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all cursor-pointer"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />

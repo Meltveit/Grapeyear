@@ -30,7 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     TOP_REGIONS.forEach((region) => {
         const regionUrls = YEARS_TO_FETCH.map((year) => ({
-            url: `${baseUrl}/vintages/${region.countryCode.toLowerCase()}/${region.slug}/${year}`,
+            url: `${baseUrl}/vintages/${region.country.toLowerCase().replace(/ /g, '-')}/${region.slug}/${year}`,
             lastModified: new Date(),
             changeFrequency: 'weekly' as const,
             priority: 0.8,

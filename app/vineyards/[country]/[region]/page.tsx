@@ -189,7 +189,7 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
                             .map(r => (
                                 <Link
                                     key={r.slug}
-                                    href={`/vineyards/${country.toLowerCase()}/${r.slug}`}
+                                    href={`/vineyards/${r.country.toLowerCase().replace(/ /g, '-')}/${r.slug}`}
                                     className="block p-4 bg-white/5 rounded-xl text-center hover:bg-white/10 transition-colors border border-white/5"
                                 >
                                     <span className="text-lg font-playfair">{r.name}</span>
