@@ -93,6 +93,17 @@ export async function POST(req: Request) {
         }
 
         console.error("[AI] All models failed.");
+
+        // Debug: List available models
+        try {
+            console.log("[AI] Fetching available models for diagnosis...");
+            const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+            const listData = await listRes.json();
+            console.log("[AI] Available Models Response:", JSON.stringify(listData, null, 2));
+        } catch (debugErr) {
+            console.error("[AI] Failed to list models:", debugErr);
+        }
+
         return NextResponse.json({ error: 'AI Service Unavailable: ' + (lastError?.message || 'Unknown') }, { status: 500 });
     } catch (error) {
         console.error('AI Generation Error:', error);
