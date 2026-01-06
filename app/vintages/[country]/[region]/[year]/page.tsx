@@ -4,6 +4,7 @@ import dbConnect from '@/lib/mongodb';
 import Vintage, { IVintage } from '@/lib/models/Vintage';
 import Region, { IRegion } from '@/lib/models/Region';
 import Winery from '@/lib/models/Winery';
+import Country from '@/lib/models/Country';
 import GrapeyearScore from '@/components/GrapeyearScore';
 import ClimateTable from '@/components/ClimateTable';
 import HistoricalChart from '@/components/HistoricalChart';
@@ -122,6 +123,12 @@ export default async function VintagePage({ params }: PageParams) {
         .sort({ isRecommended: -1, _id: -1 })
         .limit(3)
         .lean();
+
+    // 5. Fetch Random Countries for global exploration
+    const randomCountries = await Country.aggregate([
+        { $match: { code: { $ne: country.toUpperCase() } } },
+        { $sample: { size: 3 } }
+    ]);
 
     // Default values if vintage is missing
     const metrics = vintage?.metrics || {} as any;
@@ -338,6 +345,37 @@ export default async function VintagePage({ params }: PageParams) {
                                 No vineyards listed for this region yet.
                             </div>
                         )}
+                    </div>
+                </div>
+
+                {/* Global Destinations Section */}
+                <div className="mt-20 pt-10 border-t border-white/10">
+                    <h2 className="text-3xl font-playfair font-bold text-white mb-8">
+                        Explore other Wine Nations
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {randomCountries.map((c: any) => (
+                            <Link
+                                key={c._id}
+                                href={`/vineyards/${c.code.toLowerCase()}`}
+                                className="group relative aspect-[16/9] rounded-xl overflow-hidden block border border-white/5 hover:border-white/20 transition-all"
+                            >
+                                <div className="absolute inset-0">
+                                    <img
+                                        src={c.imageUrl || 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?q=80&w=800'}
+                                        alt={c.name}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
+                                </div>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <h3 className="text-2xl font-bold text-white font-playfair tracking-wider uppercase group-hover:scale-110 transition-transform">
+                                        {c.name}
+                                    </h3>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>
