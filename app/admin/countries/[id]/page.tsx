@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Wand2 } from 'lucide-react';
 
 import { use } from 'react';
 
@@ -127,15 +128,45 @@ export default function CountryDetailPage({ params }: { params: Promise<{ id: st
                                 placeholder="Explore {country}'s top wine regions..."
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-400 mb-2">Intro Text Template (Rich Text)</label>
+                        <div className="mb-6">
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="block text-sm font-bold text-gray-400">Intro Text Template</label>
+                                <button
+                                    type="button"
+                                    onClick={async () => {
+                                        if (!data.name) return;
+                                        setMessage({ text: 'Generating...', type: 'info' });
+                                        try {
+                                            const res = await fetch('/api/ai/generate', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({
+                                                    prompt: `Write a generic but engaging introduction template for wines from ${data.name}. Use placeholder {Year} naturally in the text.`,
+                                                    type: 'intro_template'
+                                                }),
+                                            });
+                                            const json = await res.json();
+                                            if (json.text) {
+                                                setData({ ...data, introTextTemplate: json.text });
+                                                setMessage({ text: 'Generated!', type: 'success' });
+                                            }
+                                        } catch (e) {
+                                            setMessage({ text: 'Failed to generate', type: 'error' });
+                                        }
+                                    }}
+                                    className="text-xs flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1 rounded hover:opacity-90 transition-opacity"
+                                >
+                                    <Wand2 size={12} />
+                                    Generate Template
+                                </button>
+                            </div>
                             <textarea
                                 value={data.introTextTemplate || ''}
                                 onChange={(e) => setData({ ...data, introTextTemplate: e.target.value })}
-                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 font-mono text-sm h-40 text-gray-300"
-                                placeholder="Home to world-class regions like {top_regions}, {country} offers..."
+                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 h-32 font-mono text-sm"
+                                placeholder="Example: The {Year} vintage in France was..."
                             />
-                            <p className="text-xs text-gray-500 mt-2">This text appears at the top of the country page.</p>
+                            <p className="text-xs text-gray-500 mt-1">Use <code>{'{Year}'}</code> as a placeholder.</p>
                         </div>
                     </div>
                 </div>

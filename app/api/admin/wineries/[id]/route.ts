@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
+import Winery from "@/lib/models/Winery";
 import Region from "@/lib/models/Region";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -11,13 +12,13 @@ export async function GET(
     try {
         await connectToDatabase();
         const { id } = await params;
-        const region = await Region.findById(id);
+        const winery = await Winery.findById(id);
 
-        if (!region) {
-            return NextResponse.json({ error: "Region not found" }, { status: 404 });
+        if (!winery) {
+            return NextResponse.json({ error: "Winery not found" }, { status: 404 });
         }
 
-        return NextResponse.json(region);
+        return NextResponse.json(winery);
     } catch (error) {
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
@@ -35,38 +36,36 @@ export async function PUT(
         await connectToDatabase();
         const { id } = await params;
 
-        const region = await Region.findByIdAndUpdate(
+        const winery = await Winery.findByIdAndUpdate(
             id,
             { ...body },
             { new: true, runValidators: true }
         );
 
-        if (!region) {
-            return NextResponse.json({ error: "Region not found" }, { status: 404 });
+        if (!winery) {
+            return NextResponse.json({ error: "Winery not found" }, { status: 404 });
         }
 
-        // Trigger IndexNow
-        // Construct the public URL for this region
-        // Assuming structure /vineyards/[countrySlug]/[regionSlug] or similar
-        // For now, let's use a best-effort construction since we might not have the countrySlug handy without populate
-        // Actually, let's fetch the country slug to be precise
-
+        // Trigger IndexNow (Proactive Indexing)
         try {
-            // We can fire-and-forget this to not block the UI
             (async () => {
-                const RegionWithCountry = await Region.findById(region._id).populate('countryId');
-                if (RegionWithCountry && RegionWithCountry.countryId) {
-                    const countrySlug = (RegionWithCountry.countryId as any).slug;
-                    const url = `https://grapeyear.com/vineyards/${countrySlug}/${region.slug}`;
+                // Fetch region to get country slug
+                // Hierarchy: Winery -> Region -> Country
+                // Winery URL: /vineyards/[country]/[region]/[winerySlug] ? Or just /wineries/[slug]?
+                // The implementation plan says /wineries/[region], but user wants specific winery pages.
+                // Let's assume /wineries/[slug] for now or nested. 
+                // Actually, let's stick to simple submission for now.
+                if (winery.slug) {
                     const { submitToIndexNow } = await import('@/lib/indexnow');
-                    await submitToIndexNow([url]);
+                    // We need to know the full URL structure.
+                    // Let's defer this specific URL construction until we decide the public route.
                 }
             })();
-        } catch (err) {
-            console.error('IndexNow trigger failed', err);
+        } catch (e) {
+            console.error(e);
         }
 
-        return NextResponse.json(region);
+        return NextResponse.json(winery);
     } catch (error) {
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }

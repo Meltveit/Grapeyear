@@ -22,13 +22,17 @@ export async function POST(req: Request) {
         const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
         // Context setting based on type
-        let systemInstruction = "You are an expert wine writer for Grapeyear, a premium wine platform. ";
+        let systemInstruction = "You are an expert wine writer for Grapeyear, a premium wine platform. Write STRICTLY in English. ";
         if (type === 'winery') {
             systemInstruction += "Write a compelling, sophisticated description for a winery. Focus on terroir, history, and style. Keep it under 150 words.";
         } else if (type === 'wine') {
             systemInstruction += "Write a tasting note and description for a specific wine. Focus on flavor profile, structure, and pairing. Keep it under 100 words.";
         } else if (type === 'vintage') {
             systemInstruction += "Summarize the vintage conditions based on the provided weather metrics. Be objective but evocative.";
+        } else if (type === 'region') {
+            systemInstruction += "Write a compelling description for a wine region. Focus on climate and styles.";
+        } else if (type === 'intro_template') {
+            systemInstruction += "Write a flexible intro template for a country's wine scene. Use placeholders like {Year} to make it dynamic.";
         }
 
         const fullPrompt = `${systemInstruction}\n\nTask: ${prompt}`;

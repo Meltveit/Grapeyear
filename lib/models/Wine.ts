@@ -29,6 +29,10 @@ const WineSchema = new mongoose.Schema({
     imageUrl: {
         type: String,
     },
+    isFeatured: {
+        type: Boolean,
+        default: false,
+    },
     // SEO Fields
     keywords: [{
         type: String, // e.g., ["Full-bodied", "Oaky", "Napa Cab"]

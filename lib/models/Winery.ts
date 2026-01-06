@@ -33,9 +33,17 @@ const WinerySchema = new mongoose.Schema({
     websiteUrl: {
         type: String,
     },
+    email: {
+        type: String,
+    },
     isFeatured: {
         type: Boolean,
         default: false,
+    },
+    tier: {
+        type: String,
+        enum: ['Basic', 'Premium'], // Premium = "Recommended" / Top of list
+        default: 'Basic',
     },
     createdAt: {
         type: Date,
