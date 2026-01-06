@@ -35,27 +35,7 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
     const countryName = regionConfig.country;
 
     // TODO: Connect to a real Winery database model later.
-    // For now, we mock some premier estates based on the region to show the UI structure.
-    const mockWineries = [
-        {
-            name: "Premier Estate",
-            description: "A historic estate known for exceptional terroir and traditional winemaking methods.",
-            location: "Heart of " + regionConfig.name,
-            visitUrl: "#"
-        },
-        {
-            name: "Domaine de la " + regionConfig.name,
-            description: "Modern innovations meet centuries of tradition at this family-owned winery.",
-            location: "Upper " + regionConfig.name,
-            visitUrl: "#"
-        },
-        {
-            name: "Château " + regionConfig.name,
-            description: "Renowned for their single-vineyard bottlings and commitment to biodiversity.",
-            location: "Valley Floor",
-            visitUrl: "#"
-        }
-    ];
+    // Featured wineries section has been removed for now.
 
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-purple-500/30">
@@ -108,39 +88,23 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-playfair font-bold">Featured Wineries</h2>
-                    <span className="text-sm text-gray-400">(Coming Soon)</span>
+                {/* Intro / Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                    <div className="bg-white/5 p-6 rounded-2xl border border-white/5 text-center">
+                        <div className="text-purple-400 font-bold mb-1">Country</div>
+                        <div className="text-xl">{countryName}</div>
+                    </div>
+                    <div className="bg-white/5 p-6 rounded-2xl border border-white/5 text-center">
+                        <div className="text-purple-400 font-bold mb-1">Famous For</div>
+                        <div className="text-xl">World-Class Wines</div>
+                    </div>
+                    <div className="bg-white/5 p-6 rounded-2xl border border-white/5 text-center">
+                        <div className="text-purple-400 font-bold mb-1">Climate</div>
+                        <div className="text-xl">Unique Microclimate</div>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {mockWineries.map((winery, i) => (
-                        <div key={i} className="group bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl p-8 transition-colors">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 className="text-2xl font-playfair font-bold text-white mb-2">
-                                        {winery.name}
-                                    </h3>
-                                    <div className="flex items-center text-sm text-purple-400">
-                                        <MapPin className="w-4 h-4 mr-1" />
-                                        {winery.location}
-                                    </div>
-                                </div>
-                                <div className="p-3 bg-white/5 rounded-full group-hover:bg-white/10 transition-colors">
-                                    <Globe className="w-5 h-5 text-gray-300" />
-                                </div>
-                            </div>
-
-                            <p className="text-gray-400 mb-6 leading-relaxed">
-                                {winery.description}
-                            </p>
-
-                            <button className="flex items-center text-sm font-medium text-white/50 cursor-not-allowed uppercase tracking-wider">
-                                Visit Website <ExternalLink className="w-4 h-4 ml-2" />
-                            </button>
-                        </div>
-                    ))}
-                </div>
+                {/* Featured Wineries Section Removed - To be replaced with real data later */}
 
                 {/* Integration with Vintages */}
                 <div className="mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-r from-purple-900/20 to-black border border-white/10 text-center">
