@@ -8,6 +8,7 @@ import Wine from '@/lib/models/Wine';
 import { MapPin, Globe, Mail } from 'lucide-react';
 
 import Region from '@/lib/models/Region'; // Import Region model
+import RecommendationSidebar from '../components/RecommendationSidebar';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -32,19 +33,48 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
     // Fetch wines for this winery
     const wines = await Wine.find({ wineryId: winery._id });
 
-    // Fetch Region name
-    let regionName = winery.region;
+    // Fetch Region details
+    let regionDoc = null;
     if (winery.region && winery.region.length === 24) { // Assuming ObjectId length
         try {
-            const regionDoc = await Region.findById(winery.region);
-            if (regionDoc) regionName = regionDoc.name;
+            regionDoc = await Region.findById(winery.region);
         } catch (e) {
-            // If fetch fails, fallback to ID or whatever is stored
+            // If fetch fails
         }
     }
+    const regionName = regionDoc?.name || winery.region;
+    // Fallback for country code if missing in region or if region fetch failed
+    const countryCode = regionDoc?.countryCode || winery.country.toLowerCase().replace(/ /g, '-');
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white">
+            {/* Breadcrumbs */}
+            <nav aria-label="Breadcrumb" className="absolute top-0 left-0 w-full p-6 z-20">
+                <ol className="flex flex-wrap items-center gap-2 text-sm text-gray-400">
+                    <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
+                    <li className="text-gray-600">/</li>
+                    <li><Link href="/vineyards" className="hover:text-white transition-colors">Vineyards</Link></li>
+                    <li className="text-gray-600">/</li>
+                    <li>
+                        <Link href={`/vineyards/${countryCode}`} className="hover:text-white transition-colors">
+                            {winery.country}
+                        </Link>
+                    </li>
+                    <li className="text-gray-600">/</li>
+                    {regionDoc && regionDoc.slug ? (
+                        <li>
+                            <Link href={`/vineyards/${countryCode}/${regionDoc.slug}`} className="hover:text-white transition-colors">
+                                {regionName}
+                            </Link>
+                        </li>
+                    ) : (
+                        <li>{regionName}</li>
+                    )}
+                    <li className="text-gray-600">/</li>
+                    <li className="text-white" aria-current="page">{winery.name}</li>
+                </ol>
+            </nav>
+
             {/* Hero */}
             <div className="relative h-[50vh] flex items-center justify-center">
                 {winery.imageUrl ? (
@@ -152,6 +182,14 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
                             )}
                         </div>
                     </div>
+
+                    {/* Discovery / Recommendations */}
+                    <RecommendationSidebar
+                        currentWineryId={winery._id}
+                        currentRegionId={winery.region}
+                        currentCountry={winery.country}
+                    />
+
                     {winery.isFeatured && (
                         <div className="bg-gradient-to-br from-purple-900/40 to-blue-900/20 border border-purple-500/30 rounded-xl p-6">
                             <h3 className="font-bold text-lg mb-2 text-purple-300">Grapeyear Selection</h3>
