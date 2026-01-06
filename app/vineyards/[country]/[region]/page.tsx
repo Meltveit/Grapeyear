@@ -4,6 +4,10 @@ import { notFound } from 'next/navigation';
 import { TOP_REGIONS } from '@/lib/constants';
 import { ArrowLeft, ChevronRight, MapPin, ExternalLink, Globe } from 'lucide-react';
 import type { Metadata } from 'next';
+import connectToDatabase from '@/lib/mongodb';
+import Region from '@/lib/models/Region';
+import Winery from '@/lib/models/Winery';
+import Image from 'next/image';
 
 interface PageParams {
     params: Promise<{
@@ -34,8 +38,17 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
 
     const countryName = regionConfig.country;
 
-    // TODO: Connect to a real Winery database model later.
-    // Featured wineries section has been removed for now.
+
+
+    await connectToDatabase();
+
+    // Find the Region document in DB to get its ID (needed to find linked wineries)
+    const regionDoc = await Region.findOne({ slug: regionSlug }).lean();
+
+    let wineries: any[] = [];
+    if (regionDoc) {
+        wineries = await Winery.find({ region: regionDoc._id }).sort({ isFeatured: -1, name: 1 }).lean();
+    }
 
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-purple-500/30">
@@ -104,7 +117,66 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
                     </div>
                 </div>
 
-                {/* Featured Wineries Section Removed - To be replaced with real data later */}
+                {/* Wineries List */}
+                <div className="mb-20">
+                    <h2 className="text-3xl font-playfair font-bold mb-8 text-center text-white">
+                        Wineries in {regionConfig.name}
+                    </h2>
+
+                    {wineries.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {wineries.map((winery) => (
+                                <Link
+                                    key={winery._id}
+                                    href={`/wineries/${winery.slug}`}
+                                    className="group block bg-gray-900 rounded-xl overflow-hidden border border-gray-800 hover:border-purple-500/50 transition-all hover:shadow-2xl hover:shadow-purple-900/20"
+                                >
+                                    <div className="relative h-48 overflow-hidden">
+                                        {winery.imageUrl ? (
+                                            <Image
+                                                src={winery.imageUrl}
+                                                alt={winery.name}
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 bg-gray-800 flex items-center justify-center text-gray-600">
+                                                <MapPin className="w-8 h-8 opacity-50" />
+                                            </div>
+                                        )}
+                                        {winery.isFeatured && (
+                                            <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-xs font-bold px-2 py-1 rounded shadow-lg">
+                                                ★ Recommended
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="p-6">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="text-xl font-playfair font-bold text-white group-hover:text-purple-400 transition-colors">
+                                                {winery.name}
+                                            </h3>
+                                        </div>
+                                        {winery.description && (
+                                            <p className="text-gray-400 text-sm line-clamp-2 mb-4">
+                                                {winery.description}
+                                            </p>
+                                        )}
+                                        <div className="flex items-center text-xs text-purple-400 font-bold uppercase tracking-wider">
+                                            Visit Winery <ChevronRight className="w-3 h-3 ml-1" />
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/5">
+                            <p className="text-gray-400 mb-4">No wineries added yet for this region.</p>
+                            <Link href="/contact" className="text-purple-400 hover:text-purple-300 underline">
+                                Suggest a winery
+                            </Link>
+                        </div>
+                    )}
+                </div>
 
                 {/* Integration with Vintages */}
                 <div className="mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-r from-purple-900/20 to-black border border-white/10 text-center">
