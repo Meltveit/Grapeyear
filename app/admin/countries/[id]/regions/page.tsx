@@ -70,6 +70,9 @@ export default function CountryRegionsPage({ params }: { params: Promise<{ id: s
                                         {region.isTopRegion && (
                                             <span className="bg-yellow-500/10 text-yellow-500 text-xs px-2 py-0.5 rounded border border-yellow-500/20">Top Region</span>
                                         )}
+                                        <span className="text-xs bg-gray-700 px-2 py-0.5 rounded text-blue-300 font-mono border border-gray-600">
+                                            {region.wineryCount || 0} Wineries
+                                        </span>
                                     </div>
                                     <div className="text-xs text-gray-400 font-mono">/{region.slug}</div>
                                 </div>

@@ -10,10 +10,23 @@ export async function GET() {
         // Fetch all countries
         const countries = await Country.find({}).sort({ name: 1 });
 
-        // Optionally, fetch region counts for each country for dashboard display
-        // Keeping it simple for now to just get the list rendering
+        // Aggregate winery counts by country name
+        // (Assuming Winery model uses the exact country name string as in Country model)
+        const wineryCounts = await import("@/lib/models/Winery").then(m => m.default.aggregate([
+            { $group: { _id: "$country", count: { $sum: 1 } } }
+        ]));
 
-        return NextResponse.json(countries);
+        const countMap: Record<string, number> = {};
+        wineryCounts.forEach((c: any) => {
+            if (c._id) countMap[c._id] = c.count;
+        });
+
+        const countriesWithCounts = countries.map((country) => ({
+            ...country.toObject(),
+            wineryCount: countMap[country.name] || 0
+        }));
+
+        return NextResponse.json(countriesWithCounts);
 
     } catch (error) {
         console.error("Countries API Error:", error);

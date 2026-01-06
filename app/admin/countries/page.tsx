@@ -8,6 +8,7 @@ interface Country {
     name: string;
     slug: string;
     code: string;
+    wineryCount?: number;
 }
 
 export default function CountriesPage() {
@@ -57,10 +58,13 @@ export default function CountriesPage() {
                             <div key={country._id} className="p-6 flex items-center justify-between hover:bg-gray-700/50 transition-colors">
                                 <div className="flex items-center gap-4">
                                     <span className="text-2xl">{country.code.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397))}</span>
-                                    <div>
+                                    <div className="flex items-center gap-2">
                                         <h3 className="font-bold text-lg">{country.name}</h3>
-                                        <div className="text-xs text-gray-400 font-mono">/{country.slug}</div>
+                                        <span className="text-xs bg-gray-700 px-2 py-0.5 rounded text-purple-300 font-mono border border-gray-600">
+                                            {country.wineryCount || 0} Wineries
+                                        </span>
                                     </div>
+                                    <div className="text-xs text-gray-400 font-mono">/{country.slug}</div>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <Link href={`/admin/countries/${country._id}`} className="text-sm bg-black/30 px-3 py-1.5 rounded hover:bg-black/50 transition-colors text-purple-300 border border-purple-500/20">

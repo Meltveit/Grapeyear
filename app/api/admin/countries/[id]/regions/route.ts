@@ -13,7 +13,24 @@ export async function GET(
         // Find regions belonging to this country
         const regions = await Region.find({ countryId: id }).sort({ name: 1 });
 
-        return NextResponse.json(regions);
+        // Aggregate winery counts per region
+        const regionIds = regions.map(r => r._id);
+        const wineryCounts = await import("@/lib/models/Winery").then(m => m.default.aggregate([
+            { $match: { region: { $in: regionIds } } },
+            { $group: { _id: "$region", count: { $sum: 1 } } }
+        ]));
+
+        const countMap: Record<string, number> = {};
+        wineryCounts.forEach((c: any) => {
+            if (c._id) countMap[c._id.toString()] = c.count;
+        });
+
+        const regionsWithCounts = regions.map(r => ({
+            ...r.toObject(),
+            wineryCount: countMap[r._id.toString()] || 0
+        }));
+
+        return NextResponse.json(regionsWithCounts);
     } catch (error) {
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
