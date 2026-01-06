@@ -66,7 +66,7 @@ function SignInContent() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-                                placeholder="admin@grapeyear.com"
+
                                 required
                             />
                         </div>
@@ -80,7 +80,6 @@ function SignInContent() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-                                placeholder="••••••••"
                                 required
                             />
                         </div>
