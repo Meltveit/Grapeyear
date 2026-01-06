@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import dbConnect from '@/lib/mongodb';
 import Vintage, { IVintage } from '@/lib/models/Vintage';
 import Region, { IRegion } from '@/lib/models/Region';
+import Winery from '@/lib/models/Winery';
 import GrapeyearScore from '@/components/GrapeyearScore';
 import ClimateTable from '@/components/ClimateTable';
 import HistoricalChart from '@/components/HistoricalChart';
@@ -113,6 +114,14 @@ export default async function VintagePage({ params }: PageParams) {
 
     // 3. Fetch Historical Data
     const historicalData = await getHistoricalVintages((region as any)._id, yearInt);
+
+    // 4. Fetch Wineries for this Region
+    const wineries = await Winery.find({
+        region: (region as any)._id
+    })
+        .sort({ isRecommended: -1, _id: -1 })
+        .limit(3)
+        .lean();
 
     // Default values if vintage is missing
     const metrics = vintage?.metrics || {} as any;
@@ -265,6 +274,70 @@ export default async function VintagePage({ params }: PageParams) {
                                 )}
                             </div>
                         </div>
+                    </div>
+                </div>
+                {/* Wineries Section */}
+                <div className="mt-20 pt-10 border-t border-white/10">
+                    <div className="flex flex-col md:flex-row items-end justify-between mb-8">
+                        <div>
+                            <h2 className="text-3xl font-playfair font-bold text-white mb-2">
+                                Want to explore vineyards in {region.name}?
+                            </h2>
+                            <p className="text-gray-400">
+                                Discover the estates shaping the legacy of this region.
+                            </p>
+                        </div>
+                        <Link
+                            href={`/vineyards/${country}/${regionSlug}`}
+                            className="text-purple-400 hover:text-purple-300 transition-colors flex items-center mt-4 md:mt-0"
+                        >
+                            Explore all vineyards <ChevronRight className="w-4 h-4 ml-1" />
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {wineries.map((winery: any) => (
+                            <Link
+                                key={winery._id}
+                                href={`/wineries/${winery.slug}`}
+                                className="group relative aspect-[4/3] rounded-xl overflow-hidden block border border-white/5 hover:border-white/20 transition-all"
+                            >
+                                {/* Background Image */}
+                                <div className="absolute inset-0">
+                                    <img
+                                        src={winery.image || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=800'}
+                                        alt={winery.name}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                                </div>
+
+                                {/* Content Overlay */}
+                                <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                                    {/* Recommended Badge (Fake logic for demo, ideally check field) */}
+                                    {/* If you want real recommended logic, check winery.isRecommended */}
+                                    {(winery.isRecommended || winery.tier === 'premium') && (
+                                        <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1 backdrop-blur-md border border-white/20">
+                                            <span className="text-[10px]">★</span> RECOMMENDED
+                                        </div>
+                                    )}
+
+                                    <h3 className="text-xl font-bold text-white font-playfair mb-1 group-hover:text-purple-300 transition-colors">
+                                        {winery.name}
+                                    </h3>
+                                    <div className="flex items-center text-xs text-gray-300 space-x-2">
+                                        <span className="uppercase tracking-wider">{region.name}</span>
+                                        {winery.wineryCount && <span>• {winery.wines?.length || 0} Wines</span>}
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
+
+                        {wineries.length === 0 && (
+                            <div className="col-span-3 text-center py-10 text-gray-500 italic bg-white/5 rounded-xl border border-white/5">
+                                No vineyards listed for this region yet.
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
