@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import { Analytics } from "@vercel/analytics/react"
 
@@ -7,11 +8,11 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
 
 export const metadata: Metadata = {
-  title: 'Grapeyear | Visual Climate Intelligence',
+  title: 'Grapeyear | Visual Climate Intelligence For Wines',
   description: 'Vintage intelligence driven by objective climate data.',
   keywords: ['wine', 'vintage', 'climate', 'data', 'bordeaux', 'napa', 'tuscany', 'harvest'],
   openGraph: {
-    title: 'Grapeyear | Visual Climate Intelligence',
+    title: 'Grapeyear | Visual Climate Intelligence For Wines',
     description: 'Explore wine vintages through the lens of climate data. Objective scores for collectors and investors.',
     url: 'https://www.grapeyear.com',
     siteName: 'Grapeyear',
@@ -76,6 +77,12 @@ export default function RootLayout({
         />
         {children}
         <Analytics />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5652295648800611"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
