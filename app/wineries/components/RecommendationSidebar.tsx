@@ -147,6 +147,14 @@ export default async function RecommendationSidebar({ currentWineryId, currentRe
                         {/* Overlay Gradient */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-70 transition-opacity" />
 
+                        {/* Badge for Featured */}
+                        {(winery as any).isFeatured && (
+                            <div className="absolute top-2 right-2 bg-purple-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10 flex items-center gap-1 backdrop-blur-sm">
+                                <Sparkles size={10} />
+                                <span>RECOMMENDED</span>
+                            </div>
+                        )}
+
                         {/* Content Overlay */}
                         <div className="absolute bottom-0 left-0 w-full p-4 transform translate-y-1 group-hover:translate-y-0 transition-transform">
                             <h4 className="font-bold text-lg text-white font-playfair leading-tight mb-1 group-hover:text-purple-300 transition-colors">{winery.name}</h4>
