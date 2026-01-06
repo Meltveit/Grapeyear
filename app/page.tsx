@@ -210,21 +210,7 @@ export default async function Home() {
             </div>
           </Link>
 
-          {/* Card 2: Collecting Wine */}
-          <Link href="/guides/collecting-wine" className="group relative h-80 rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-500/50 transition-all">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
-            <Image
-              src="/images/guides/collecting-wine.png"
-              alt="Collecting Wine"
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-700 bg-gray-900"
-            />
-            <div className="absolute bottom-0 left-0 p-8 z-20">
-              <h3 className="text-2xl font-bold mb-2 group-hover:text-emerald-300 transition-colors">How to start collecting wines</h3>
-              <p className="text-gray-400">Building a cellar? Here is what to think about when investing in your collection.</p>
-            </div>
-          </Link>
-          {/* Card 3: All Guides */}
+          {/* Card 2: All Guides */}
           <Link href="/guides" className="group relative h-80 rounded-2xl overflow-hidden border border-white/10 hover:border-amber-500/50 transition-all">
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
             <Image
@@ -239,6 +225,21 @@ export default async function Home() {
               <div className="mt-4 flex items-center text-sm font-medium text-amber-400 opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                 Browse All Guides &rarr;
               </div>
+            </div>
+          </Link>
+
+          {/* Card 3: Collecting Wine */}
+          <Link href="/guides/collecting-wine" className="group relative h-80 rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-500/50 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
+            <Image
+              src="/images/guides/collecting-wine.png"
+              alt="Collecting Wine"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-700 bg-gray-900"
+            />
+            <div className="absolute bottom-0 left-0 p-8 z-20">
+              <h3 className="text-2xl font-bold mb-2 group-hover:text-emerald-300 transition-colors">How to start collecting wines</h3>
+              <p className="text-gray-400">Building a cellar? Here is what to think about when investing in your collection.</p>
             </div>
           </Link>
         </div>
