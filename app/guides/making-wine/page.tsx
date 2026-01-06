@@ -77,8 +77,12 @@ export default function MakingWineGuide() {
                     <p>
                         Before fermentation, measure your stats.
                         <br />
-                        <strong>Sugar (Brix):</strong> You want a specific gravity (SG) around 1.090 for a 12-13% ABV wine.
+                        <strong>Sugar (Brix) & Chaptalization:</strong> You want a specific gravity (SG) around 1.090 for a 12-13% ABV wine. If your grapes are not sweet enough (low SG), you must add sugar—a process called <em>Chaptalization</em>.
                         <br />
+                        <span className="text-gray-400 text-sm block mt-2 mb-2 pl-4 border-l-2 border-purple-500">
+                            <strong>Which sugar?</strong> Plain white granulated cane sugar (Table sugar) is the industry standard for home winemakers as it ferments completely cleanly. Corn sugar (Dextrose) is also excellent. Avoid honey or brown sugar unless you specifically want those flavors. <br />
+                            <em>Tip: Always dissolve the sugar in some warm must before stirring it into the main batch.</em>
+                        </span>
                         <strong>Acidity (pH):</strong> This is critical for stability.
                     </p>
 
