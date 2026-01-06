@@ -76,8 +76,8 @@ export default async function Home() {
       <div className="relative h-[80vh] flex flex-col items-center justify-center overflow-hidden">
         {/* Optimized Hero Background Image */}
         <Image
-          src="/images/regions/bordeaux.jpg"
-          alt="Bordeaux vineyards"
+          src="/images/regions/burgundy.jpg"
+          alt="Burgundy vineyards"
           fill
           priority
           fetchPriority="high"
