@@ -219,10 +219,12 @@ export default async function VintagePage({ params }: PageParams) {
                     <div className="lg:col-span-4 space-y-8">
                         <div className="bg-white/5 rounded-2xl p-8 border border-white/10 flex flex-col items-center text-center">
                             <GrapeyearScore score={score} quality={vintage?.quality || 'average'} />
-                            <div className="mt-8 pt-8 border-t border-white/5 w-full">
-                                <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-4">AI Climate Summary</h3>
-                                <p className="text-gray-300 font-serif leading-relaxed italic">
-                                    "{summary}"
+                            <div className="mt-8 pt-8 border-t border-white/5 w-full text-left">
+                                <h3 className="text-xl font-playfair font-bold text-white mb-4">
+                                    {region.name} {yearInt} Vintage Report
+                                </h3>
+                                <p className="text-gray-300 font-serif text-lg leading-relaxed">
+                                    {summary}
                                 </p>
                             </div>
                         </div>
