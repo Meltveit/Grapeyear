@@ -194,7 +194,7 @@ export default async function Home() {
         <h2 className="text-3xl font-playfair font-bold mb-4 text-center">Journey into Wine</h2>
         <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">Explore our expert guides on crafting, collecting, and investing in the world's finest wines.</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Card 1: Making Wine */}
           <Link href="/guides/making-wine" className="group relative h-80 rounded-2xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all">
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
@@ -224,14 +224,26 @@ export default async function Home() {
               <p className="text-gray-400">Building a cellar? Here is what to think about when investing in your collection.</p>
             </div>
           </Link>
-        </div>
-
-        <div className="text-center mt-12">
-          <Link href="/guides" className="inline-flex items-center gap-2 px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full font-medium transition-all group">
-            Browse All Guides
-            <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+          {/* Card 3: All Guides */}
+          <Link href="/guides" className="group relative h-80 rounded-2xl overflow-hidden border border-white/10 hover:border-amber-500/50 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
+            <Image
+              src="/images/guides/wine-education.png"
+              alt="Wine Education"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-700 bg-gray-900"
+            />
+            <div className="absolute bottom-0 left-0 p-8 z-20">
+              <h3 className="text-2xl font-bold mb-2 group-hover:text-amber-300 transition-colors">Start Your Journey</h3>
+              <p className="text-gray-400">Explore our full library of masterclasses, guides, and expert insights.</p>
+              <div className="mt-4 flex items-center text-sm font-medium text-amber-400 opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                Browse All Guides &rarr;
+              </div>
+            </div>
           </Link>
         </div>
+
+
       </section>
 
       {/* Value Props / Stats */}
