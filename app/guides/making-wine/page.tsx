@@ -144,31 +144,31 @@ export default function MakingWineGuide() {
                     <table className="w-full text-left border-collapse my-6">
                         <thead>
                             <tr className="border-b border-white/20">
-                                <th className="py-2 text-purple-400 w-1/4">Yeast Strain</th>
-                                <th className="py-2 text-purple-400 w-1/4">Best For</th>
-                                <th className="py-2 text-purple-400 w-1/2">Characteristics</th>
+                                <th className="py-2 px-4 text-purple-400 w-1/4">Yeast Strain</th>
+                                <th className="py-2 px-4 text-purple-400 w-1/4">Best For</th>
+                                <th className="py-2 px-4 text-purple-400 w-1/2">Characteristics</th>
                             </tr>
                         </thead>
                         <tbody className="text-gray-300">
                             <tr className="border-b border-white/10">
-                                <td className="py-3 font-semibold text-white">Lalvin EC-1118</td>
-                                <td className="py-3">Everything (Sparkling, White, Late Harvest)</td>
-                                <td className="py-3">The "workhorse". High alcohol tolerance (18%), neutral flavor, very robust.</td>
+                                <td className="py-3 px-4 align-top font-semibold text-white">Lalvin EC-1118</td>
+                                <td className="py-3 px-4 align-top">Everything (Sparkling, White, Late Harvest)</td>
+                                <td className="py-3 px-4 align-top">The "workhorse". High alcohol tolerance (18%), neutral flavor, very robust.</td>
                             </tr>
                             <tr className="border-b border-white/10">
-                                <td className="py-3 font-semibold text-white">Lalvin RC-212</td>
-                                <td className="py-3">Pinot Noir, Light Reds</td>
-                                <td className="py-3">Enhances structure and color stability. fruity and spicy notes.</td>
+                                <td className="py-3 px-4 align-top font-semibold text-white">Lalvin RC-212</td>
+                                <td className="py-3 px-4 align-top">Pinot Noir, Light Reds</td>
+                                <td className="py-3 px-4 align-top">Enhances structure and color stability. fruity and spicy notes.</td>
                             </tr>
                             <tr className="border-b border-white/10">
-                                <td className="py-3 font-semibold text-white">Lalvin 71B</td>
-                                <td className="py-3">Fruity Whites, Rosé, Nouveau styles</td>
-                                <td className="py-3">Metabolizes properly malic acid, creating a smoother, softer wine.</td>
+                                <td className="py-3 px-4 align-top font-semibold text-white">Lalvin 71B</td>
+                                <td className="py-3 px-4 align-top">Fruity Whites, Rosé, Nouveau styles</td>
+                                <td className="py-3 px-4 align-top">Metabolizes properly malic acid, creating a smoother, softer wine.</td>
                             </tr>
                             <tr className="border-b border-white/10">
-                                <td className="py-3 font-semibold text-white">Montrachet</td>
-                                <td className="py-3">Full-bodied Chardonnay, Reds</td>
-                                <td className="py-3">Vigorous, good for complex wines, but produces sulfides if stressed (needs nutrients).</td>
+                                <td className="py-3 px-4 align-top font-semibold text-white">Montrachet</td>
+                                <td className="py-3 px-4 align-top">Full-bodied Chardonnay, Reds</td>
+                                <td className="py-3 px-4 align-top">Vigorous, good for complex wines, but produces sulfides if stressed (needs nutrients).</td>
                             </tr>
                         </tbody>
                     </table>
