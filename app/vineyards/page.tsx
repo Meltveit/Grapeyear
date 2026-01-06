@@ -9,15 +9,32 @@ export const metadata = {
 };
 
 export default function VineyardDirectory() {
-    // 1. Get unique countries
+    // 1. Curated Country Images
+    const COUNTRY_IMAGES: Record<string, string> = {
+        'France': 'https://images.unsplash.com/photo-1599666921545-1275ca82bc92?q=80&w=1600&auto=format&fit=crop', // Rolling French vineyards
+        'Italy': 'https://images.unsplash.com/photo-1528629297340-d1d466945dc5?q=80&w=1600&auto=format&fit=crop', // Tuscan landscape
+        'USA': 'https://images.unsplash.com/photo-1548685913-fe6678babe8d?q=80&w=1600&auto=format&fit=crop', // Napa palms
+        'Spain': 'https://images.unsplash.com/photo-1566838381836-e414c330f545?q=80&w=1600&auto=format&fit=crop', // Priorat slate
+        'Germany': 'https://images.unsplash.com/photo-1563820658760-4def71be582d?q=80&w=1600&auto=format&fit=crop', // Mosel steep slopes
+        'Austria': 'https://images.unsplash.com/photo-1594300742183-11381333792f?q=80&w=1600&auto=format&fit=crop',
+        'Hungary': 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1600&auto=format&fit=crop',
+        'Argentina': 'https://images.unsplash.com/photo-1534234828569-1f27c7e81e31?q=80&w=1600&auto=format&fit=crop', // Andes backdrop
+        'Chile': 'https://images.unsplash.com/photo-1582848386829-d5c2250284ae?q=80&w=1600&auto=format&fit=crop',
+        'Australia': 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1600&auto=format&fit=crop',
+        'New Zealand': 'https://images.unsplash.com/photo-1501601004392-5444ca9f4a5c?q=80&w=1600&auto=format&fit=crop',
+        'South Africa': 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?q=80&w=1600&auto=format&fit=crop',
+        'Portugal': 'https://images.unsplash.com/photo-1585501815599-2475510667db?q=80&w=1600&auto=format&fit=crop', // Douro terraced
+    };
+
+    // 2. Get unique countries
     const uniqueCountries = Array.from(new Set(TOP_REGIONS.map(r => r.country)))
+        .sort()
         .map(countryName => {
             const region = TOP_REGIONS.find(r => r.country === countryName);
             return {
                 name: countryName,
                 code: region?.countryCode.toLowerCase() || 'un',
-                // Use the image of the first region found as the country cover for now
-                image: region?.imageUrl || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb'
+                image: COUNTRY_IMAGES[countryName] || region?.imageUrl || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb'
             };
         });
 
