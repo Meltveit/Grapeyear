@@ -19,6 +19,14 @@ export default function ImageUpload({ value, onChange, label = "Image" }: ImageU
         if (!e.target.files || e.target.files.length === 0) return;
 
         const file = e.target.files[0];
+
+        // 1. Client-side Size Check (Max 4.5MB)
+        if (file.size > 4.5 * 1024 * 1024) {
+            setError("File is too large. Max 4.5MB.");
+            if (fileInputRef.current) fileInputRef.current.value = '';
+            return;
+        }
+
         setUploading(true);
         setError('');
 
@@ -31,15 +39,33 @@ export default function ImageUpload({ value, onChange, label = "Image" }: ImageU
                 },
             );
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Upload failed');
+            // Robust response handling: Read as text first to handle non-JSON errors (like 413)
+            const responseText = await response.text();
+            let responseData;
+
+            try {
+                responseData = JSON.parse(responseText);
+            } catch (e) {
+                // Not JSON (likely HTML or Plain Text error from Vercel/Next)
+                throw new Error(responseText.substring(0, 100) || `Upload failed with status ${response.status}`);
             }
 
-            const newBlob = await response.json();
-            onChange(newBlob.url);
+            if (!response.ok) {
+                throw new Error(responseData.error || 'Upload failed');
+            }
+
+            onChange(responseData.url);
         } catch (err: any) {
-            setError(err.message || 'Error uploading file');
+            console.error("Upload error:", err);
+            // Clean up error message for common cases
+            let msg = err.message || 'Error uploading file';
+            if (msg.includes("Request Entity Too Large") || msg.includes("body exceeded")) {
+                msg = "File is too large for the server. Try a smaller file (Max 4.5MB).";
+            }
+            if (msg.includes("Unexpected token")) {
+                msg = "Server returned an invalid response. File might be too large.";
+            }
+            setError(msg);
         } finally {
             setUploading(false);
             if (fileInputRef.current) {
