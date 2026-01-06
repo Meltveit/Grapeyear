@@ -225,6 +225,13 @@ export default async function Home() {
             </div>
           </Link>
         </div>
+
+        <div className="text-center mt-12">
+          <Link href="/guides" className="inline-flex items-center gap-2 px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full font-medium transition-all group">
+            Browse All Guides
+            <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+          </Link>
+        </div>
       </section>
 
       {/* Value Props / Stats */}
