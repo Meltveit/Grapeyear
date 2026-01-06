@@ -97,7 +97,8 @@ async function seed() {
                     rainfall: totalRain,
                     sunshineHours,
                     frostDays,
-                    regionName: region.name
+                    regionName: region.name,
+                    year
                 });
 
                 await Vintage.findOneAndUpdate(
