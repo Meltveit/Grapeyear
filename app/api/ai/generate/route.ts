@@ -62,12 +62,12 @@ export async function POST(req: Request) {
             systemInstruction += `
             You are a world-class wine critic and copywriter (like Robert Parker or Jancis Robinson). 
             Create a COMPREHENSIVE winery profile based on the name${websiteContext ? ' and provided website context' : ''}. 
-            The tone should be sophisticated, evocative, and authoritative.
+            The tone should be **understated, elegant, and timeless** (avoid overly hyperbolic marketing language like "genesis of a revolution"). Focus on heritage, precision, and place.
             
-            Structure the 'description' field using clean spacing (paragraphs) and HEADER LABELS in uppercase (e.g. 'HISTORY:', 'TERROIR:'). Do NOT use Markdown symbols like ** or ##, just uppercase labels.
+            Structure the 'description' field using clean spacing (paragraphs) and **Mixed Case Headers** (e.g. 'The History:', 'The Terroir:', 'The Wines:'). Do NOT use Markdown symbols like ** or ##, or all-caps headers.
 
             Return a RAW JSON object (no markdown formatting around the json) with these exact keys:
-            - description: A long, detailed profile (300-500 words) covering History, Terroir, Philosophy, Top Wines, and Global Status. Break into readable sections.
+            - description: A long, detailed profile (300-500 words) covering The Estate/History, The Terroir, The Style/Philosophy, and Key Wines.
             - metaTitle: A perfect SEO title (approx 50-60 chars). Format: "[Winery Name] | [Short Tagline] - GrapeYear".
             - metaDescription: A compelling SEO description (approx 150-160 chars).
             - location: The full address or main location (City, Region, Country). Extract from website contact/footer if available.
