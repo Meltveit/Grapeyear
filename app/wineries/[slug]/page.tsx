@@ -67,24 +67,7 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
                     </div>
                     <h1 className="text-5xl md:text-7xl font-bold font-playfair mb-6">{winery.name}</h1>
 
-                    {/* Contact Links */}
-                    <div className="flex flex-wrap gap-4 justify-center">
-                        {winery.websiteUrl && (
-                            <a href={winery.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">
-                                <Globe size={16} /> Website
-                            </a>
-                        )}
-                        {winery.email && (
-                            <a href={`mailto:${winery.email}`} className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">
-                                <Mail size={16} /> Email
-                            </a>
-                        )}
-                        {winery.phone && (
-                            <div className="flex items-center gap-2 text-sm text-gray-300">
-                                <span>📞 {winery.phone}</span>
-                            </div>
-                        )}
-                    </div>
+
                 </div>
             </div>
 
@@ -122,12 +105,53 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
 
                 {/* Sidebar */}
                 <div className="space-y-8">
-                    {winery.location && (
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                            <h3 className="font-bold text-lg mb-4">Location</h3>
-                            <p className="text-gray-300 mb-4">{winery.location}</p>
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                        <h3 className="font-bold text-lg mb-4 text-purple-400">Contact & Location</h3>
+
+                        {winery.location && (
+                            <div className="mb-6">
+                                <label className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Address</label>
+                                <a
+                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(winery.location)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-200 hover:text-purple-400 transition-colors flex items-start gap-2"
+                                >
+                                    <MapPin size={18} className="mt-0.5 shrink-0" />
+                                    <span>{winery.location}</span>
+                                </a>
+                            </div>
+                        )}
+
+                        <div className="space-y-3">
+                            {winery.phone && (
+                                <div>
+                                    <label className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Phone</label>
+                                    <a href={`tel:${winery.phone}`} className="text-gray-300 hover:text-white flex items-center gap-2">
+                                        <span>📞 {winery.phone}</span>
+                                    </a>
+                                </div>
+                            )}
+
+                            {winery.email && (
+                                <div>
+                                    <label className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Email</label>
+                                    <a href={`mailto:${winery.email}`} className="text-gray-300 hover:text-white flex items-center gap-2">
+                                        <Mail size={16} /> {winery.email}
+                                    </a>
+                                </div>
+                            )}
+
+                            {winery.websiteUrl && (
+                                <div>
+                                    <label className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Website</label>
+                                    <a href={winery.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white flex items-center gap-2 truncate">
+                                        <Globe size={16} /> Visit Website
+                                    </a>
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </div>
                     {winery.isFeatured && (
                         <div className="bg-gradient-to-br from-purple-900/40 to-blue-900/20 border border-purple-500/30 rounded-xl p-6">
                             <h3 className="font-bold text-lg mb-2 text-purple-300">Grapeyear Selection</h3>
