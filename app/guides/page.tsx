@@ -29,6 +29,7 @@ export default function GuidesIndex() {
         <main className="min-h-screen bg-[#0a0a0a] text-white pt-24 pb-20">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-16">
+                    <Link href="/" className="text-gray-500 hover:text-white mb-6 inline-block transition-colors">&larr; Back to Home</Link>
                     <h1 className="text-4xl md:text-6xl font-playfair font-bold mb-6">Wine Knowledge Hub</h1>
                     <p className="text-xl text-gray-400 max-w-2xl mx-auto">
                         Deep dive into the craft, culture, and business of wine. Whether you are a creator or a collector, your journey starts here.
