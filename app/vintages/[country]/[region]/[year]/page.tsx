@@ -11,6 +11,7 @@ import HistoricalChart from '@/components/HistoricalChart';
 import Link from 'next/link';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import { TOP_REGIONS } from '@/lib/constants';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 interface PageParams {
     params: Promise<{
@@ -239,206 +240,204 @@ export default async function VintagePage({ params }: PageParams) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            <nav className="p-6">
-                <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Back to Search
-                </Link>
-            </nav>
-
-            <div className="container mx-auto px-4">
-                {/* Header */}
-                <header className="flex flex-col md:flex-row items-end justify-between mb-16 border-b border-white/10 pb-8">
-                    <div>
-                        <div className="text-sm uppercase tracking-widest text-purple-500 mb-2">{region.country}</div>
-                        <h1 className="text-5xl md:text-7xl font-playfair font-bold text-white mb-2">
-                            {region.name}
-                        </h1>
-                        <div className="flex items-center gap-4 text-4xl font-light text-gray-400">
-                            <Link
-                                href={`/vintages/${country}/${regionSlug}/${yearInt - 1}`}
-                                className="p-2 hover:text-white transition-colors"
-                                aria-label="Previous Year"
-                            >
-                                <ChevronLeft className="w-8 h-8" />
-                            </Link>
-                            <span>{yearInt}</span>
-                            {/* Allow next year navigation freely or limit logic if desired */}
-                            <Link
-                                href={`/vintages/${country}/${regionSlug}/${yearInt + 1}`}
-                                className="p-2 hover:text-white transition-colors"
-                                aria-label="Next Year"
-                            >
-                                <ChevronRight className="w-8 h-8" />
-                            </Link>
+            <div className="container mx-auto px-4 py-6">
+                <Breadcrumbs
+                    items={[
+                        { label: 'Vineyards', href: '/vineyards' },
+                        { label: region.country, href: `/vineyards/${country.toLowerCase()}` },
+                        { label: region.name, href: `/vineyards/${country.toLowerCase()}/${regionSlug}` },
+                        { label: `${yearInt} Vintage` }
+                    ]}
+                />
+                            <h1 className="text-5xl md:text-7xl font-playfair font-bold text-white mb-2">
+                                {region.name}
+                            </h1>
+                            <div className="flex items-center gap-4 text-4xl font-light text-gray-400">
+                                <Link
+                                    href={`/vintages/${country}/${regionSlug}/${yearInt - 1}`}
+                                    className="p-2 hover:text-white transition-colors"
+                                    aria-label="Previous Year"
+                                >
+                                    <ChevronLeft className="w-8 h-8" />
+                                </Link>
+                                <span>{yearInt}</span>
+                                {/* Allow next year navigation freely or limit logic if desired */}
+                                <Link
+                                    href={`/vintages/${country}/${regionSlug}/${yearInt + 1}`}
+                                    className="p-2 hover:text-white transition-colors"
+                                    aria-label="Next Year"
+                                >
+                                    <ChevronRight className="w-8 h-8" />
+                                </Link>
+                            </div>
                         </div>
-                    </div>
-                    <div className="mt-8 md:mt-0">
-                        <div className="text-right hidden md:block">
-                            <span className="block text-xs uppercase tracking-widest text-gray-500">Vintage Quality</span>
-                            <span className={`text-2xl font-serif italic capitalize ${!vintage ? 'text-gray-500' : 'text-white'}`}>
-                                {quality}
-                            </span>
+                        <div className="mt-8 md:mt-0">
+                            <div className="text-right hidden md:block">
+                                <span className="block text-xs uppercase tracking-widest text-gray-500">Vintage Quality</span>
+                                <span className={`text-2xl font-serif italic capitalize ${!vintage ? 'text-gray-500' : 'text-white'}`}>
+                                    {quality}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                </header>
+                    </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Left Column: Score & Summary */}
-                    <div className="lg:col-span-4 space-y-8">
-                        <div className="bg-white/5 rounded-2xl p-8 border border-white/10 flex flex-col items-center text-center">
-                            <GrapeyearScore score={score} quality={vintage?.quality || 'average'} />
-                            <div className="mt-8 pt-8 border-t border-white/5 w-full text-left">
-                                <h3 className="text-xl font-playfair font-bold text-white mb-4">
-                                    {region.name} {yearInt} Vintage Report
-                                </h3>
-                                <p className="text-gray-300 font-serif text-lg leading-relaxed">
-                                    {summary}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        {/* Left Column: Score & Summary */}
+                        <div className="lg:col-span-4 space-y-8">
+                            <div className="bg-white/5 rounded-2xl p-8 border border-white/10 flex flex-col items-center text-center">
+                                <GrapeyearScore score={score} quality={vintage?.quality || 'average'} />
+                                <div className="mt-8 pt-8 border-t border-white/5 w-full text-left">
+                                    <h3 className="text-xl font-playfair font-bold text-white mb-4">
+                                        {region.name} {yearInt} Vintage Report
+                                    </h3>
+                                    <p className="text-gray-300 font-serif text-lg leading-relaxed">
+                                        {summary}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="bg-gradient-to-br from-purple-900/10 to-black/20 rounded-2xl p-6 border border-white/5">
+                                <h3 className="text-sm font-bold text-gray-400 mb-2">About {region.name}</h3>
+                                <p className="text-sm text-gray-500 leading-relaxed">
+                                    {description}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="bg-gradient-to-br from-purple-900/10 to-black/20 rounded-2xl p-6 border border-white/5">
-                            <h3 className="text-sm font-bold text-gray-400 mb-2">About {region.name}</h3>
-                            <p className="text-sm text-gray-500 leading-relaxed">
-                                {description}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Right Column: Detailed Data */}
-                    <div className="lg:col-span-8 space-y-8">
-                        <div className={`transition-opacity ${!vintage ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
-                            <ClimateTable
-                                metrics={{
-                                    gdd,
-                                    rainfall,
-                                    diurnal,
-                                    avgTemp,
-                                    sunshineHours: metricsSunshineHours,
-                                    frostDays: metricsFrostDays
-                                }}
-                            />
-
-                            <div className="relative">
-                                <HistoricalChart
-                                    currentYear={yearInt}
-                                    data={historicalData}
+                        {/* Right Column: Detailed Data */}
+                        <div className="lg:col-span-8 space-y-8">
+                            <div className={`transition-opacity ${!vintage ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+                                <ClimateTable
+                                    metrics={{
+                                        gdd,
+                                        rainfall,
+                                        diurnal,
+                                        avgTemp,
+                                        sunshineHours: metricsSunshineHours,
+                                        frostDays: metricsFrostDays
+                                    }}
                                 />
-                                {!vintage && (
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="bg-black/80 p-4 rounded-xl border border-white/10 text-gray-400 text-sm">
-                                            Collecting Data...
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* Wineries Section */}
-                <div className="mt-20 pt-10 border-t border-white/10">
-                    <div className="flex flex-col md:flex-row items-end justify-between mb-8">
-                        <div>
-                            <h2 className="text-3xl font-playfair font-bold text-white mb-2">
-                                Want to explore vineyards in {region.name}?
-                            </h2>
-                            <p className="text-gray-400">
-                                Discover the estates shaping the legacy of this region.
-                            </p>
-                        </div>
-                        <Link
-                            href={`/vineyards/${country}/${regionSlug}`}
-                            className="text-purple-400 hover:text-purple-300 transition-colors flex items-center mt-4 md:mt-0"
-                        >
-                            Explore all vineyards <ChevronRight className="w-4 h-4 ml-1" />
-                        </Link>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {wineries.map((winery: any) => (
-                            <Link
-                                key={winery._id}
-                                href={`/wineries/${winery.slug}`}
-                                className="group relative aspect-[4/3] rounded-xl overflow-hidden block border border-white/5 hover:border-white/20 transition-all"
-                            >
-                                {/* Background Image */}
-                                <div className="absolute inset-0">
-                                    <img
-                                        src={winery.image || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=800'}
-                                        alt={winery.name}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                <div className="relative">
+                                    <HistoricalChart
+                                        currentYear={yearInt}
+                                        data={historicalData}
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                                </div>
-
-                                {/* Content Overlay */}
-                                <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                                    {/* Recommended Badge (Fake logic for demo, ideally check field) */}
-                                    {/* If you want real recommended logic, check winery.isRecommended */}
-                                    {(winery.isRecommended || winery.tier === 'premium') && (
-                                        <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1 backdrop-blur-md border border-white/20">
-                                            <span className="text-[10px]">★</span> RECOMMENDED
+                                    {!vintage && (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="bg-black/80 p-4 rounded-xl border border-white/10 text-gray-400 text-sm">
+                                                Collecting Data...
+                                            </div>
                                         </div>
                                     )}
-
-                                    <h3 className="text-xl font-bold text-white font-playfair mb-1 group-hover:text-purple-300 transition-colors">
-                                        {winery.name}
-                                    </h3>
-                                    <div className="flex items-center text-xs text-gray-300 space-x-2">
-                                        <span className="uppercase tracking-wider">{region.name}</span>
-                                        {winery.wineryCount && <span>• {winery.wines?.length || 0} Wines</span>}
-                                    </div>
                                 </div>
-                            </Link>
-                        ))}
+                            </div>
+                        </div>
+                    </div>
+                    {/* Wineries Section */ }
+    <div className="mt-20 pt-10 border-t border-white/10">
+        <div className="flex flex-col md:flex-row items-end justify-between mb-8">
+            <div>
+                <h2 className="text-3xl font-playfair font-bold text-white mb-2">
+                    Want to explore vineyards in {region.name}?
+                </h2>
+                <p className="text-gray-400">
+                    Discover the estates shaping the legacy of this region.
+                </p>
+            </div>
+            <Link
+                href={`/vineyards/${country}/${regionSlug}`}
+                className="text-purple-400 hover:text-purple-300 transition-colors flex items-center mt-4 md:mt-0"
+            >
+                Explore all vineyards <ChevronRight className="w-4 h-4 ml-1" />
+            </Link>
+        </div>
 
-                        {wineries.length === 0 && (
-                            <div className="col-span-3 text-center py-10 text-gray-500 italic bg-white/5 rounded-xl border border-white/5">
-                                No vineyards listed for this region yet.
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {wineries.map((winery: any) => (
+                <Link
+                    key={winery._id}
+                    href={`/wineries/${winery.slug}`}
+                    className="group relative aspect-[4/3] rounded-xl overflow-hidden block border border-white/5 hover:border-white/20 transition-all"
+                >
+                    {/* Background Image */}
+                    <div className="absolute inset-0">
+                        <img
+                            src={winery.image || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=800'}
+                            alt={winery.name}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                    </div>
+
+                    {/* Content Overlay */}
+                    <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                        {/* Recommended Badge (Fake logic for demo, ideally check field) */}
+                        {/* If you want real recommended logic, check winery.isRecommended */}
+                        {(winery.isRecommended || winery.tier === 'premium') && (
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1 backdrop-blur-md border border-white/20">
+                                <span className="text-[10px]">★</span> RECOMMENDED
                             </div>
                         )}
-                    </div>
-                </div>
 
-                {/* Global Destinations Section */}
-                <div className="mt-20 pt-10 border-t border-white/10">
-                    <div className="flex items-end justify-between mb-8">
-                        <h2 className="text-3xl font-playfair font-bold text-white">
-                            Explore other Wine Nations
-                        </h2>
-                        <Link
-                            href="/vineyards"
-                            className="text-purple-400 hover:text-purple-300 transition-colors flex items-center"
-                        >
-                            Explore All Regions <ChevronRight className="w-4 h-4 ml-1" />
-                        </Link>
+                        <h3 className="text-xl font-bold text-white font-playfair mb-1 group-hover:text-purple-300 transition-colors">
+                            {winery.name}
+                        </h3>
+                        <div className="flex items-center text-xs text-gray-300 space-x-2">
+                            <span className="uppercase tracking-wider">{region.name}</span>
+                            {winery.wineryCount && <span>• {winery.wines?.length || 0} Wines</span>}
+                        </div>
                     </div>
+                </Link>
+            ))}
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {randomCountries.map((c: any) => (
-                            <Link
-                                key={c._id}
-                                href={`/vineyards/${c.linkSlug}`}
-                                className="group relative aspect-[16/9] rounded-xl overflow-hidden block border border-white/5 hover:border-white/20 transition-all"
-                            >
-                                <div className="absolute inset-0">
-                                    <img
-                                        src={c.imageUrl || 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?q=80&w=800'}
-                                        alt={c.name}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
-                                </div>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <h3 className="text-2xl font-bold text-white font-playfair tracking-wider uppercase group-hover:scale-110 transition-transform">
-                                        {c.name}
-                                    </h3>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
+            {wineries.length === 0 && (
+                <div className="col-span-3 text-center py-10 text-gray-500 italic bg-white/5 rounded-xl border border-white/5">
+                    No vineyards listed for this region yet.
                 </div>
-            </div>
-        </main>
-    );
+            )}
+        </div>
+    </div>
+
+    {/* Global Destinations Section */ }
+    <div className="mt-20 pt-10 border-t border-white/10">
+        <div className="flex items-end justify-between mb-8">
+            <h2 className="text-3xl font-playfair font-bold text-white">
+                Explore other Wine Nations
+            </h2>
+            <Link
+                href="/vineyards"
+                className="text-purple-400 hover:text-purple-300 transition-colors flex items-center"
+            >
+                Explore All Regions <ChevronRight className="w-4 h-4 ml-1" />
+            </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {randomCountries.map((c: any) => (
+                <Link
+                    key={c._id}
+                    href={`/vineyards/${c.linkSlug}`}
+                    className="group relative aspect-[16/9] rounded-xl overflow-hidden block border border-white/5 hover:border-white/20 transition-all"
+                >
+                    <div className="absolute inset-0">
+                        <img
+                            src={c.imageUrl || 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?q=80&w=800'}
+                            alt={c.name}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <h3 className="text-2xl font-bold text-white font-playfair tracking-wider uppercase group-hover:scale-110 transition-transform">
+                            {c.name}
+                        </h3>
+                    </div>
+                </Link>
+            ))}
+        </div>
+    </div>
+                </div >
+            </main >
+            );
 }

@@ -8,6 +8,7 @@ import connectToDatabase from '@/lib/mongodb';
 import Region from '@/lib/models/Region';
 import Winery from '@/lib/models/Winery';
 import Image from 'next/image';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 interface PageParams {
     params: Promise<{
@@ -52,19 +53,15 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
 
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-purple-500/30">
-            <nav className="p-6">
-                <div className="container mx-auto flex items-center gap-2 text-sm text-gray-400">
-                    <Link href="/vineyards" className="hover:text-white transition-colors">
-                        Vineyards
-                    </Link>
-                    <ChevronRight className="w-4 h-4" />
-                    <Link href={`/vineyards/${country}`} className="hover:text-white transition-colors">
-                        {countryName}
-                    </Link>
-                    <ChevronRight className="w-4 h-4" />
-                    <span className="text-white">{regionConfig.name}</span>
-                </div>
-            </nav>
+            <div className="container mx-auto px-4 py-6">
+                <Breadcrumbs
+                    items={[
+                        { label: 'Vineyards', href: '/vineyards' },
+                        { label: countryName, href: `/vineyards/${country.toLowerCase()}` },
+                        { label: regionConfig.name }
+                    ]}
+                />
+            </div>
 
             {/* Hero */}
             <div className="relative h-[40vh] md:h-[50vh]">

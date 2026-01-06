@@ -154,20 +154,6 @@ export default function CollectingWineGuide() {
                         The best time to plant a vineyard was 20 years ago. The best time to start a collection is today. Start small, buy what you love, and protect it well.
                     </p>
 
-                    {/* Affiliate / CTA Section */}
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mt-12">
-                        <h3 className="text-2xl font-bold mb-4">Storage Recommendations</h3>
-                        <p className="text-gray-400 mb-6">Protect your investment with professional cooling.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="p-4 bg-black/40 rounded-lg text-center opacity-50 border border-dashed border-gray-700">
-                                <span className="text-sm">Affiliate Link: EuroCave Wine Fridge</span>
-                            </div>
-                            <div className="p-4 bg-black/40 rounded-lg text-center opacity-50 border border-dashed border-gray-700">
-                                <span className="text-sm">Affiliate Link: Coravin Pivot System</span>
-                            </div>
-                        </div>
-                    </div>
-
                 </article>
             </div>
         </main>

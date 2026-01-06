@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { TOP_REGIONS } from '@/lib/constants';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import type { Metadata } from 'next';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 interface PageParams {
     params: Promise<{
@@ -42,15 +43,14 @@ export default async function CountryVineyardsPage({ params }: PageParams) {
 
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-purple-500/30">
-            <nav className="p-6">
-                <div className="container mx-auto flex items-center gap-2 text-sm text-gray-400">
-                    <Link href="/vineyards" className="hover:text-white transition-colors">
-                        Vineyards
-                    </Link>
-                    <ChevronRight className="w-4 h-4" />
-                    <span className="text-white">{countryName}</span>
-                </div>
-            </nav>
+            <div className="container mx-auto px-4 py-6">
+                <Breadcrumbs
+                    items={[
+                        { label: 'Vineyards', href: '/vineyards' },
+                        { label: countryName }
+                    ]}
+                />
+            </div>
 
             <div className="container mx-auto px-4 py-8">
                 <header className="mb-12 border-b border-white/10 pb-8">

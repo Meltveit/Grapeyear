@@ -9,6 +9,7 @@ import { MapPin, Globe, Mail } from 'lucide-react';
 
 import Region from '@/lib/models/Region'; // Import Region model
 import RecommendationSidebar from '../components/RecommendationSidebar';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -99,31 +100,16 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
             />
 
             {/* Breadcrumbs */}
-            <nav aria-label="Breadcrumb" className="absolute top-0 left-0 w-full p-6 z-20">
-                <ol className="flex flex-wrap items-center gap-2 text-sm text-gray-400">
-                    <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
-                    <li className="text-gray-600">/</li>
-                    <li><Link href="/vineyards" className="hover:text-white transition-colors">Vineyards</Link></li>
-                    <li className="text-gray-600">/</li>
-                    <li>
-                        <Link href={`/vineyards/${breadcrumbCountrySlug}`} className="hover:text-white transition-colors">
-                            {winery.country}
-                        </Link>
-                    </li>
-                    <li className="text-gray-600">/</li>
-                    {breadcrumbRegionSlug !== "#" ? (
-                        <li>
-                            <Link href={`/vineyards/${breadcrumbCountrySlug}/${breadcrumbRegionSlug}`} className="hover:text-white transition-colors">
-                                {regionName}
-                            </Link>
-                        </li>
-                    ) : (
-                        <li>{regionName}</li>
-                    )}
-                    <li className="text-gray-600">/</li>
-                    <li className="text-white bg-white/10 px-2 py-0.5 rounded-md" aria-current="page">{winery.name}</li>
-                </ol>
-            </nav>
+            <div className="absolute top-0 left-0 w-full p-6 z-20">
+                <Breadcrumbs
+                    items={[
+                        { label: 'Vineyards', href: '/vineyards' },
+                        { label: winery.country || 'Country', href: `/vineyards/${breadcrumbCountrySlug}` },
+                        { label: regionName, href: breadcrumbRegionSlug !== '#' ? `/vineyards/${breadcrumbCountrySlug}/${breadcrumbRegionSlug}` : '#' },
+                        { label: winery.name }
+                    ]}
+                />
+            </div>
 
             {/* Hero */}
             <div className="relative h-[50vh] flex items-center justify-center">
