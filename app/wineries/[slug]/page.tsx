@@ -51,9 +51,10 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
     const wines = await Wine.find({ wineryId: winery._id });
 
     let regionName = "Unknown Region";
-    let countryName = winery.country; // Default to winery's country
+    let countryName = winery.country || "Unknown Country";
     let breadcrumbRegionSlug = "#";
-    let breadcrumbCountrySlug = winery.country.toLowerCase().replace(/\s+/g, '-'); // Default to winery's country slug
+    // Safe access to country for slug
+    let breadcrumbCountrySlug = (winery.country || "unknown").toLowerCase().replace(/\s+/g, '-');
 
     if (winery.region) {
         try {
@@ -235,8 +236,8 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
                     {/* Discovery / Recommendations */}
                     <RecommendationSidebar
                         currentWineryId={winery._id}
-                        currentRegionId={winery.region}
-                        currentCountry={winery.country}
+                        currentRegionId={winery.region || ""}
+                        currentCountry={winery.country || ""}
                     />
 
                     {winery.isFeatured && (
