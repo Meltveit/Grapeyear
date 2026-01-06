@@ -91,20 +91,20 @@ export default async function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-transparent to-[#0a0a0a] z-10" />
 
         {/* Navigation */}
-        <nav className="absolute top-0 left-0 w-full p-6 z-30 grid grid-cols-3 items-center">
-          <div className="font-playfair font-bold text-2xl text-white tracking-tighter">Grapeyear</div>
+        <nav className="absolute top-0 left-0 w-full p-6 z-30 flex flex-col gap-4 md:grid md:grid-cols-3 items-center">
+          <div className="font-playfair font-bold text-2xl text-white tracking-tighter text-center md:text-left">Grapeyear</div>
 
           {/* Centered Button */}
-          <div className="flex justify-center">
+          <div className="flex justify-center w-full md:w-auto">
             <div className="flex bg-white/10 backdrop-blur-md rounded-full p-1 border border-white/10 shadow-xl">
-              <Link href="/vineyards" className="px-8 py-2.5 rounded-full hover:bg-white/20 transition-all text-sm font-medium tracking-wide">
+              <Link href="/vineyards" className="px-6 py-2 md:px-8 md:py-2.5 rounded-full hover:bg-white/20 transition-all text-sm font-medium tracking-wide whitespace-nowrap">
                 Explore Vineyards
               </Link>
             </div>
           </div>
 
           {/* Empty right side for LiveMetrics */}
-          <div></div>
+          <div className="hidden md:block"></div>
         </nav>
 
         <div className="relative z-20 container mx-auto px-4 text-center">
