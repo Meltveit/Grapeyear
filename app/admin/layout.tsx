@@ -35,7 +35,7 @@ export default async function AdminLayout({
                         <Map size={20} />
                         Countries & Regions
                     </Link>
-                    <Link href="/admin/vines" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-colors">
+                    <Link href="/admin/wines" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-colors">
                         <Wine size={20} />
                         Wines & Vintages
                     </Link>

@@ -24,6 +24,13 @@ const WineSchema = new mongoose.Schema({
     imageUrl: {
         type: String,
     },
+    // SEO Fields
+    keywords: [{
+        type: String, // e.g., ["Full-bodied", "Oaky", "Napa Cab"]
+    }],
+    seoDescription: {
+        type: String, // Meta description specific to this wine
+    },
     createdAt: {
         type: Date,
         default: Date.now,
