@@ -65,10 +65,17 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <head>
         {/* Preconnect to external origins for better performance */}
+        <meta name="google-adsense-account" content="ca-pub-5652295648800611"></meta>
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="preconnect" href="https://api.open-meteo.com" />
         <link rel="dns-prefetch" href="https://api.open-meteo.com" />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5652295648800611"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </head>
       <body className="bg-[#0a0a0a] text-white antialiased font-sans">
         <script
@@ -76,13 +83,6 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {children}
-        <Analytics />
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5652295648800611"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );
