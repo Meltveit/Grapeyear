@@ -63,7 +63,8 @@ export default function WineryDetailPage({ params }: { params: Promise<{ id: str
 
         setGenerating(true);
         try {
-            const prompt = `Write a sophisticated description for the winery "${data.name}". Focus on its history, terroir, and signature wines. Keep it under 150 words.`;
+            // Send just the name, let the API System Prompt handle the heavy lifting for 'winery'
+            const prompt = data.name;
 
             const res = await fetch('/api/ai/generate', {
                 method: 'POST',
@@ -74,10 +75,29 @@ export default function WineryDetailPage({ params }: { params: Promise<{ id: str
             if (!res.ok) throw new Error('AI generation failed');
 
             const { text } = await res.json();
-            setData({ ...data, description: text });
-            setMessage({ text: 'Description generated!', type: 'success' });
+
+            try {
+                // Attempt to parse JSON response
+                // Clean markdown code blocks if present
+                const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                const json = JSON.parse(cleanText);
+
+                setData({
+                    ...data,
+                    description: json.description || text,
+                    metaTitle: json.metaTitle || data.metaTitle,
+                    metaDescription: json.metaDescription || data.metaDescription
+                    // Could also populate 'location', 'websiteUrl' if the AI returns them in the future
+                });
+                setMessage({ text: 'Full Profile & SEO Generated!', type: 'success' });
+            } catch (e) {
+                // Fallback for non-winery types or failed JSON
+                setData({ ...data, description: text });
+                setMessage({ text: 'Description generated!', type: 'success' });
+            }
+
         } catch (err) {
-            setMessage({ text: 'Failed to generate description', type: 'error' });
+            setMessage({ text: 'Failed to generate content', type: 'error' });
         } finally {
             setGenerating(false);
         }
