@@ -189,6 +189,44 @@ export default async function Home() {
 
       <RegionExplorer />
 
+      {/* Guides & Insights */}
+      <section className="py-24 container mx-auto px-4">
+        <h2 className="text-3xl font-playfair font-bold mb-4 text-center">Journey into Wine</h2>
+        <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">Explore our expert guides on crafting, collecting, and investing in the world's finest wines.</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Card 1: Making Wine */}
+          <Link href="/guides/making-wine" className="group relative h-80 rounded-2xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
+            <Image
+              src="/images/guides/making-wine.png" // We'll need to handle missing image gracefully or use a generic one
+              alt="Making Wine"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-700 bg-gray-900"
+            />
+            <div className="absolute bottom-0 left-0 p-8 z-20">
+              <h3 className="text-2xl font-bold mb-2 group-hover:text-purple-300 transition-colors">Looking to start making wine?</h3>
+              <p className="text-gray-400">From the first vine to the final bottle. Discover the art of winemaking.</p>
+            </div>
+          </Link>
+
+          {/* Card 2: Collecting Wine */}
+          <Link href="/guides/collecting-wine" className="group relative h-80 rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-500/50 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
+            <Image
+              src="/images/guides/collecting-wine.png"
+              alt="Collecting Wine"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-700 bg-gray-900"
+            />
+            <div className="absolute bottom-0 left-0 p-8 z-20">
+              <h3 className="text-2xl font-bold mb-2 group-hover:text-emerald-300 transition-colors">How to start collecting wines</h3>
+              <p className="text-gray-400">Building a cellar? Here is what to think about when investing in your collection.</p>
+            </div>
+          </Link>
+        </div>
+      </section>
+
       {/* Value Props / Stats */}
       <section className="py-20 bg-white/5 border-y border-white/10">
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
