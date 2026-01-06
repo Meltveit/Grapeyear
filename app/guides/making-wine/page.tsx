@@ -7,9 +7,35 @@ export const metadata = {
     keywords: ['making wine', 'home winemaking', 'wine yeast types', 'wine pH', 'wine filtration', 'winemaking guide'],
 };
 
+
 export default function MakingWineGuide() {
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'How to Start Making Wine: From Grapes to Glass',
+        image: 'https://grapeyear.com/images/guides/making-wine.png',
+        author: {
+            '@type': 'Organization',
+            name: 'Grapeyear'
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'Grapeyear',
+            logo: {
+                '@type': 'ImageObject',
+                url: 'https://grapeyear.com/logo.png'
+            }
+        },
+        description: 'Learn the art of home winemaking. A step-by-step guide covering equipment, grape selection, yeast types, and pH.',
+        datePublished: '2025-10-15'
+    };
+
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white pt-24 pb-20">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <div className="container mx-auto px-4 max-w-4xl">
                 <div className="mb-8">
                     <Link href="/guides" className="text-purple-400 hover:text-purple-300 text-sm mb-4 inline-block">&larr; Back to Guides</Link>
@@ -118,9 +144,9 @@ export default function MakingWineGuide() {
                     <table className="w-full text-left border-collapse my-6">
                         <thead>
                             <tr className="border-b border-white/20">
-                                <th className="py-2 text-purple-400">Yeast Strain</th>
-                                <th className="py-2 text-purple-400">Best For</th>
-                                <th className="py-2 text-purple-400">Characteristics</th>
+                                <th className="py-2 text-purple-400 w-1/4">Yeast Strain</th>
+                                <th className="py-2 text-purple-400 w-1/4">Best For</th>
+                                <th className="py-2 text-purple-400 w-1/2">Characteristics</th>
                             </tr>
                         </thead>
                         <tbody className="text-gray-300">
@@ -178,24 +204,35 @@ export default function MakingWineGuide() {
                     </div>
 
                     <h2 className="text-3xl font-playfair font-bold text-purple-200 mt-16 mb-6">Start Your Winemaking Journey</h2>
+
+                    <h3 className="text-2xl font-bold text-white mt-8 mb-4">A Note on Mixing Ratios</h3>
+                    <p>
+                        Beginners often ask: <em>"How much fruit vs. water?"</em> Here is a reliable rule of thumb for a standard <strong>1 Gallon (3.8L)</strong> batch:
+                    </p>
+                    <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6 text-sm">
+                        <li className="bg-white/5 p-4 rounded-lg border border-white/10">
+                            <strong className="text-purple-400 block mb-2">Fresh Grapes</strong>
+                            15-18 lbs of grapes.<br />
+                            <strong>Water:</strong> None.<br />
+                            <strong>Sugar:</strong> Usually none (grapes are sweet enough).
+                        </li>
+                        <li className="bg-white/5 p-4 rounded-lg border border-white/10">
+                            <strong className="text-purple-400 block mb-2">Fruit Wine (Berries)</strong>
+                            3-6 lbs of fruit.<br />
+                            <strong>Water:</strong> Top up to 1 gallon.<br />
+                            <strong>Sugar:</strong> 2-3 lbs (to reach SG 1.090).
+                        </li>
+                        <li className="bg-white/5 p-4 rounded-lg border border-white/10">
+                            <strong className="text-purple-400 block mb-2">Wine Kits</strong>
+                            Concentrate + Water.<br />
+                            Follow the kit instructions exactly.<br />
+                            They are pre-balanced.
+                        </li>
+                    </ul>
+
                     <p className="mb-8">
                         The best way to learn is to do. Start with a kit or a batch of juice, master the sanitation and fermentation steps, and soon you will be ready to tackle fresh grapes.
                     </p>
-
-                    {/* Affiliate / CTA Section */}
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mt-12">
-                        <h3 className="text-2xl font-bold mb-4">Recommended Starter Gear</h3>
-                        <p className="text-gray-400 mb-6">We have curated the best equipment for beginners to start their journey correctly.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="p-4 bg-black/40 rounded-lg text-center opacity-50 border border-dashed border-gray-700">
-                                <span className="text-sm">Affiliate Link: Complete Starter Kit (North Mountain)</span>
-                            </div>
-                            <div className="p-4 bg-black/40 rounded-lg text-center opacity-50 border border-dashed border-gray-700">
-                                <span className="text-sm">Affiliate Link: Digital pH Meter (Apera Instruments)</span>
-                            </div>
-                        </div>
-                    </div>
-
                 </article>
             </div>
         </main>
