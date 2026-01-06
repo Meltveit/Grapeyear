@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import SearchBar from '@/components/SearchBar';
 import LiveMetrics from '@/components/LiveMetrics';
 import RegionExplorer from '@/components/RegionExplorer';
@@ -6,6 +7,11 @@ import { TOP_REGIONS } from '@/lib/constants';
 import dbConnect from '@/lib/mongodb';
 import Vintage from '@/lib/models/Vintage';
 import Region from '@/lib/models/Region'; // Ensure model is registered
+
+export const metadata = {
+  title: 'Grapeyear - Vintage Intelligence Driven by Climate Data',
+  description: 'Objective climate data for wine collectors, investors, and enthusiasts. Explore vintage ratings across 30+ global wine regions.',
+};
 
 async function getTopVintages() {
   try {
@@ -68,9 +74,20 @@ export default async function Home() {
       <LiveMetrics />
       {/* Hero Section */}
       <div className="relative h-[80vh] flex flex-col items-center justify-center overflow-hidden">
+        {/* Optimized Hero Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop"
+            alt="Vineyard landscape"
+            fill
+            priority
+            quality={75}
+            className="object-cover opacity-20"
+            sizes="100vw"
+          />
+        </div>
         {/* Abstract Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-[#0a0a0a] to-[#0a0a0a] z-0 pointer-events-none" />
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
 
         {/* Navigation */}
         {/* Navigation */}
@@ -107,7 +124,7 @@ export default async function Home() {
       {/* Top Rated Vintages (New Section) */}
       {topVintages.length > 0 && (
         <section className="py-16 container mx-auto px-4 border-b border-white/5">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-8">
             <h2 className="text-2xl font-playfair font-bold">Recommended Vintages</h2>
             <div className="text-xs text-purple-400 uppercase tracking-widest">Last 10 Years</div>
           </div>
@@ -148,10 +165,14 @@ export default async function Home() {
               className="group relative h-64 rounded-xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all cursor-pointer"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />
-              {/* Region Image */}
-              <div
-                className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
-                style={{ backgroundImage: `url(${region.imageUrl})` }}
+              {/* Optimized Region Image */}
+              <Image
+                src={region.imageUrl}
+                alt={`${region.name}, ${region.country}`}
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-700"
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                loading="lazy"
               />
 
               <div className="absolute bottom-4 left-4 z-20">
