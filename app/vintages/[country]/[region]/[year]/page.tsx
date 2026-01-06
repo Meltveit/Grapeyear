@@ -124,11 +124,39 @@ export default async function VintagePage({ params }: PageParams) {
         .limit(3)
         .lean();
 
-    // 5. Fetch Random Countries for global exploration
-    const randomCountries = await Country.aggregate([
-        { $match: { code: { $ne: country.toUpperCase() } } },
-        { $sample: { size: 3 } }
-    ]);
+    // 5. Select Random Global Destinations (using Constants for consistency)
+    const COUNTRY_IMAGES: Record<string, string> = {
+        'France': '/images/countries/france.jpg',
+        'Italy': '/images/countries/italy.jpg',
+        'USA': '/images/countries/usa.jpg',
+        'Spain': '/images/countries/spain.jpg',
+        'Germany': '/images/countries/germany.jpg',
+        'Austria': '/images/countries/austria.jpg',
+        'Hungary': '/images/countries/hungary.jpg',
+        'Argentina': '/images/countries/argentina.jpg',
+        'Chile': '/images/countries/chile.jpg',
+        'Australia': '/images/countries/australia.jpg',
+        'New Zealand': '/images/countries/new-zealand.jpg',
+        'South Africa': '/images/countries/south-africa.jpg',
+        'Portugal': '/images/countries/portugal.jpg',
+    };
+
+    const currentCountryName = region.country;
+    const allCountryNames = Array.from(new Set(TOP_REGIONS.map(r => r.country)));
+    const otherCountries = allCountryNames.filter(c => c !== currentCountryName);
+
+    // Shuffle and pick 3
+    const randomSelection = otherCountries.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+    const randomCountries = randomSelection.map(name => {
+        const r = TOP_REGIONS.find(reg => reg.country === name);
+        return {
+            _id: name,
+            name: name,
+            code: r?.countryCode.toLowerCase() || 'un',
+            imageUrl: COUNTRY_IMAGES[name] || r?.imageUrl || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=800'
+        };
+    });
 
     // Default values if vintage is missing
     const metrics = vintage?.metrics || {} as any;
