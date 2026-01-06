@@ -1,31 +1,44 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose from 'mongoose';
 
-export interface IRegion extends Document {
-    slug: string;
-    name: string;
-    country: string;
-    countryCode: string;
-    location: {
-        type: string;
-        coordinates: number[];
-    };
-    description?: string;
-    imageUrl?: string;
-}
-
-const RegionSchema: Schema = new Schema({
-    slug: { type: String, required: true, unique: true },
-    name: { type: String, required: true },
-    country: { type: String, required: true },
-    countryCode: { type: String, required: true },
+const RegionSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        index: true,
+    },
+    slug: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    countryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Country',
+        // Not required YET to allow migration of existing data, but intended to be required.
+        // Making it optional for now to prevent breaking existing queries if any assume shape.
+    },
+    country: {
+        type: String, // Kept for backward compatibility/Legacy
+        required: true,
+    },
+    countryCode: {
+        type: String,
+        required: true,
+    },
+    description: {
+        type: String,
+    },
     location: {
         type: { type: String, enum: ['Point'], default: 'Point' },
         coordinates: { type: [Number], required: true }, // [longitude, latitude]
     },
-    description: String,
-    imageUrl: String,
+    imageUrl: {
+        type: String,
+    },
+    isTopRegion: {
+        type: Boolean,
+        default: true,
+    },
 }, { timestamps: true });
 
-const Region: Model<IRegion> = mongoose.models.Region || mongoose.model<IRegion>('Region', RegionSchema);
-
-export default Region;
+export default mongoose.models.Region || mongoose.model('Region', RegionSchema);
