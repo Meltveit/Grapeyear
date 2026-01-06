@@ -90,8 +90,9 @@ export default function WineryDetailPage({ params }: { params: Promise<{ id: str
                     ...data,
                     description: json.description || text,
                     metaTitle: json.metaTitle || data.metaTitle,
-                    metaDescription: json.metaDescription || data.metaDescription
-                    // Could also populate 'location', 'websiteUrl' if the AI returns them in the future
+                    metaDescription: json.metaDescription || data.metaDescription,
+                    location: json.location || data.location,
+                    phone: json.phone || data.phone
                 });
                 setMessage({ text: 'Full Profile & SEO Generated!', type: 'success' });
             } catch (e) {

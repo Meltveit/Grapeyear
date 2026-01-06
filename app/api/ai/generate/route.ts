@@ -73,12 +73,29 @@ export async function POST(req: Request) {
             - location: The full address or main location (City, Region, Country). Extract from website contact/footer if available.
             - phone: Official phone number in international format (e.g. +33 ...). Extract from website if available.
 
-            Example Description Style:
-            THE ESTATE
-            Founded in 1875, this estate represents the pinnacle of quality...
+            Example Description Style (MIMIC THIS EXACTLY):
+            Weingut Robert Weil: The Blue Label Standard of Riesling Excellence
+            Weingut Robert Weil is a name synonymous with prestige, precision, and the highest expression of German Riesling. Instantly recognizable by its iconic "Tiffany blue" labels, this Rheingau estate is globally regarded as one of the finest white wine producers in the world and remains a favorite in the most exclusive cellars across the United States.
 
-            TERROIR
-            Located on steep slate slopes...
+            A Vision of Quality Since 1875
+            Founded in 1875 by Dr. Robert Weil, the estate was built with a singular focus: to produce Rieslings that could compete on the world stage with the finest wines of Bordeaux and Burgundy. Today, under the leadership of Wilhelm Weil, the fourth generation of the family, the winery has reached an unprecedented level of consistency. Weingut Robert Weil is a proud member of the VDP (Verband Deutscher Prädikatsweingüter) and is celebrated for its unwavering commitment to 100% Riesling production.
+
+            The Crown Jewel: Kiedrich Gräfenberg
+            The soul of Robert Weil’s wines lies in the village of Kiedrich. The estate’s most famous vineyard, the Kiedrich Gräfenberg, is classified as a Grosse Lage (Grand Cru) and is widely considered one of the best vineyard sites in the world.
+
+            The Terroir: Stony soils of phyllite and quartz, which impart a piercing minerality and a unique saline character to the wine.
+
+            Microclimate: The high elevation and steep slopes of the Kiedrich hills allow for a long growing season, resulting in grapes with incredible aromatic depth and vibrant, racy acidity.
+
+            The "Blue Label" Style: Purity and Precision
+            Whether dry or sweet, a Robert Weil Riesling is defined by its crystalline purity. The estate is one of the few producers capable of producing the entire spectrum of Riesling quality levels in every single vintage—from the crisp, dry Tradition to the lusciously sweet and rare Trockenbeerenauslese (TBA).
+
+            Aromas: Notes of white peach, green apple, and citrus blossoms, often evolving into complex flinty and spicy undertones.
+
+            Aging Potential: Robert Weil wines are legendary for their longevity, with top-tier bottlings capable of evolving gracefully for 50 years or more.
+
+            A Global Ambassador for German Wine
+            Weingut Robert Weil has achieved a level of brand recognition that few other German wineries can match. Particularly in the American market, the "Blue Label" has become a symbol of luxury and reliable excellence. It is a staple in high-end gastronomy and a must-have for serious collectors who value the intersection of historical tradition and modern perfection.
             `;
         } else if (type === 'wine') {
             systemInstruction += "Write a tasting note and description for a specific wine. Focus on flavor profile, structure, and pairing. Keep it under 100 words.";
