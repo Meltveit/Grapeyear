@@ -69,7 +69,11 @@ export default function WineryDetailPage({ params }: { params: Promise<{ id: str
             const res = await fetch('/api/ai/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt, type: 'winery' }),
+                body: JSON.stringify({
+                    prompt,
+                    websiteUrl: data.websiteUrl, // Pass the website URL for context 
+                    type: 'winery'
+                }),
             });
 
             if (!res.ok) throw new Error('AI generation failed');
