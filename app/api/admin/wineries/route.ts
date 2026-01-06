@@ -21,8 +21,11 @@ export async function POST(request: Request) {
         // ... (Similar logic as PUT)
 
         return NextResponse.json(winery);
-    } catch (error) {
+    } catch (error: any) {
         console.error("Winery Creation Error", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        if (error.code === 11000) {
+            return NextResponse.json({ error: "A winery with this slug already exists." }, { status: 409 });
+        }
+        return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
     }
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Wand2 } from 'lucide-react';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function WineryDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -124,15 +125,11 @@ export default function WineryDetailPage({ params }: { params: Promise<{ id: str
                             />
                         </div>
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-bold text-gray-400 mb-2">Image URL</label>
-                            <input
-                                type="text"
+                            <ImageUpload
+                                label="Winery Image"
                                 value={data.imageUrl || ''}
-                                onChange={(e) => setData({ ...data, imageUrl: e.target.value })}
-                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
-                                placeholder="https://..."
+                                onChange={(url) => setData({ ...data, imageUrl: url })}
                             />
-                            <p className="text-xs text-gray-500 mt-1">Paste a URL for now. Upload coming soon.</p>
                         </div>
                     </div>
 
@@ -201,7 +198,7 @@ export default function WineryDetailPage({ params }: { params: Promise<{ id: str
                             className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 h-40"
                         />
                     </div>
-                </div>
+                </div >
 
                 <div className="flex justify-end gap-4">
                     <Link href={`/admin/regions/${data.region}/wineries`} className="px-6 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">

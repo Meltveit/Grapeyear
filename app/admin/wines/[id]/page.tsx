@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Wand2 } from 'lucide-react';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function WineDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -199,13 +200,10 @@ export default function WineDetailPage({ params }: { params: Promise<{ id: strin
                             )}
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-gray-400 mb-2">Image URL</label>
-                            <input
-                                type="text"
+                            <ImageUpload
+                                label="Wine Bottle / Label"
                                 value={data.imageUrl || ''}
-                                onChange={(e) => setData({ ...data, imageUrl: e.target.value })}
-                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
-                                placeholder="https://..."
+                                onChange={(url) => setData({ ...data, imageUrl: url })}
                             />
                         </div>
                         <div className="flex items-center pt-8">

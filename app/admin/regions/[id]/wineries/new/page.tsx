@@ -3,6 +3,7 @@
 import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function NewWineryPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: regionId } = use(params); // The page is at /admin/regions/[id]/wineries/new, so [id] is regionId
@@ -31,12 +32,15 @@ export default function NewWineryPage({ params }: { params: Promise<{ id: string
                 body: JSON.stringify(data),
             });
 
-            if (!res.ok) throw new Error('Failed to create winery');
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Failed to create winery');
+            }
 
             // Redirect back to list
             router.push(`/admin/regions/${regionId}/wineries`);
-        } catch (err) {
-            setError('Error creating winery. Make sure name and slug are unique.');
+        } catch (err: any) {
+            setError(err.message || 'Error creating winery.');
         } finally {
             setSaving(false);
         }
@@ -85,6 +89,13 @@ export default function NewWineryPage({ params }: { params: Promise<{ id: string
                                 required
                             />
                         </div>
+                    </div>
+                    <div className="mb-6">
+                        <ImageUpload
+                            label="Winery Image"
+                            value={data.imageUrl}
+                            onChange={(url) => setData({ ...data, imageUrl: url })}
+                        />
                     </div>
                 </div>
 

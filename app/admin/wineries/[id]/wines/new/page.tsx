@@ -3,6 +3,7 @@
 import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function NewWinePage({ params }: { params: Promise<{ id: string }> }) {
     const { id: wineryId } = use(params); // The page is at /admin/wineries/[id]/wines/new
@@ -33,12 +34,15 @@ export default function NewWinePage({ params }: { params: Promise<{ id: string }
                 body: JSON.stringify(data),
             });
 
-            if (!res.ok) throw new Error('Failed to create wine');
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Failed to create wine');
+            }
 
             // Redirect back to list
             router.push(`/admin/wineries/${wineryId}/wines`);
-        } catch (err) {
-            setError('Error creating wine. Make sure name/slug are unique.');
+        } catch (err: any) {
+            setError(err.message || 'Error creating wine. Make sure name and slug are unique.');
         } finally {
             setSaving(false);
         }
@@ -100,6 +104,13 @@ export default function NewWinePage({ params }: { params: Promise<{ id: string }
                                 <option value="Dessert">Dessert</option>
                             </select>
                         </div>
+                    </div>
+                    <div className="mb-6">
+                        <ImageUpload
+                            label="Wine Bottle / Label"
+                            value={data.imageUrl}
+                            onChange={(url) => setData({ ...data, imageUrl: url })}
+                        />
                     </div>
                 </div>
 
