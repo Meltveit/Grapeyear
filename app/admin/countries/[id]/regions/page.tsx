@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function CountryRegionsPage({ params }: { params: { id: string } }) {
+import { use } from 'react';
+
+export default function CountryRegionsPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const [regions, setRegions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [countryName, setCountryName] = useState('');
@@ -13,14 +16,14 @@ export default function CountryRegionsPage({ params }: { params: { id: string } 
         async function fetchData() {
             try {
                 // Fetch Country Name for Header
-                const countryRes = await fetch(`/api/admin/countries/${params.id}`);
+                const countryRes = await fetch(`/api/admin/countries/${id}`);
                 if (countryRes.ok) {
                     const countryData = await countryRes.json();
                     setCountryName(countryData.name);
                 }
 
                 // Fetch Regions
-                const regionsRes = await fetch(`/api/admin/countries/${params.id}/regions`);
+                const regionsRes = await fetch(`/api/admin/countries/${id}/regions`);
                 if (regionsRes.ok) {
                     const regionsData = await regionsRes.json();
                     setRegions(regionsData);
@@ -32,7 +35,7 @@ export default function CountryRegionsPage({ params }: { params: { id: string } 
             }
         }
         fetchData();
-    }, [params.id]);
+    }, [id]);
 
     return (
         <div>
@@ -46,7 +49,7 @@ export default function CountryRegionsPage({ params }: { params: { id: string } 
             <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
                 <div className="p-4 border-b border-gray-700 bg-gray-900/50 flex justify-between items-center">
                     <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">Regions List</span>
-                    <Link href={`/admin/countries/${params.id}/regions/new`} className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded transition-colors">
+                    <Link href={`/admin/countries/${id}/regions/new`} className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded transition-colors">
                         + Add Region
                     </Link>
                 </div>

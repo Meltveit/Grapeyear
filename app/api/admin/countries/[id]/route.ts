@@ -6,11 +6,12 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectToDatabase();
-        const country = await Country.findById(params.id);
+        const { id } = await params;
+        const country = await Country.findById(id);
 
         if (!country) {
             return NextResponse.json({ error: "Country not found" }, { status: 404 });
@@ -24,7 +25,7 @@ export async function GET(
 
 export async function PUT(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -32,9 +33,10 @@ export async function PUT(
 
         const body = await request.json();
         await connectToDatabase();
+        const { id } = await params;
 
         const country = await Country.findByIdAndUpdate(
-            params.id,
+            id,
             { ...body },
             { new: true, runValidators: true }
         );

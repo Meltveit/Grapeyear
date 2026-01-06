@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function CountryDetailPage({ params }: { params: { id: string } }) {
+import { use } from 'react';
+
+export default function CountryDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -14,7 +17,7 @@ export default function CountryDetailPage({ params }: { params: { id: string } }
     useEffect(() => {
         async function fetchData() {
             try {
-                const res = await fetch(`/api/admin/countries/${params.id}`);
+                const res = await fetch(`/api/admin/countries/${id}`);
                 if (!res.ok) throw new Error('Failed to fetch');
                 const json = await res.json();
                 setData(json);
@@ -25,7 +28,7 @@ export default function CountryDetailPage({ params }: { params: { id: string } }
             }
         }
         fetchData();
-    }, [params.id]);
+    }, [id]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,7 +36,7 @@ export default function CountryDetailPage({ params }: { params: { id: string } }
         setMessage({ text: '', type: '' });
 
         try {
-            const res = await fetch(`/api/admin/countries/${params.id}`, {
+            const res = await fetch(`/api/admin/countries/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),

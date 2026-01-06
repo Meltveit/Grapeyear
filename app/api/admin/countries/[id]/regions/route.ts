@@ -4,13 +4,14 @@ import Region from "@/lib/models/Region";
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectToDatabase();
+        const { id } = await params;
 
         // Find regions belonging to this country
-        const regions = await Region.find({ countryId: params.id }).sort({ name: 1 });
+        const regions = await Region.find({ countryId: id }).sort({ name: 1 });
 
         return NextResponse.json(regions);
     } catch (error) {
