@@ -149,9 +149,8 @@ export default async function RecommendationSidebar({ currentWineryId, currentRe
 
                         {/* Badge for Featured */}
                         {(winery as any).isFeatured && (
-                            <div className="absolute top-2 right-2 bg-purple-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10 flex items-center gap-1 backdrop-blur-sm">
-                                <Sparkles size={10} />
-                                <span>RECOMMENDED</span>
+                            <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg z-10 backdrop-blur-sm">
+                                ★ Recommended
                             </div>
                         )}
 
