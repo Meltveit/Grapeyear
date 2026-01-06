@@ -5,6 +5,11 @@ const WineSchema = new mongoose.Schema({
         type: String, // e.g., "Cabernet Sauvignon Reserve"
         required: true,
     },
+    slug: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     wineryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Winery',
