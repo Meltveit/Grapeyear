@@ -93,11 +93,11 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
                     </div>
                     <div className="bg-white/5 p-6 rounded-2xl border border-white/5 text-center">
                         <div className="text-purple-400 font-bold mb-1">Famous For</div>
-                        <div className="text-xl">World-Class Wines</div>
+                        <div className="text-xl">{regionDoc?.famousFor || 'World-Class Wines'}</div>
                     </div>
                     <div className="bg-white/5 p-6 rounded-2xl border border-white/5 text-center">
                         <div className="text-purple-400 font-bold mb-1">Climate</div>
-                        <div className="text-xl">Unique Microclimate</div>
+                        <div className="text-xl">{regionDoc?.climate || 'Unique Microclimate'}</div>
                     </div>
                 </div>
 

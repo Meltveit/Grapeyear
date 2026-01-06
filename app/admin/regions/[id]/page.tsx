@@ -143,6 +143,29 @@ export default function RegionDetailPage({ params }: { params: Promise<{ id: str
                             className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 h-40"
                         />
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2">Famous For</label>
+                            <input
+                                type="text"
+                                value={data.famousFor || ''}
+                                onChange={(e) => setData({ ...data, famousFor: e.target.value })}
+                                placeholder="e.g. World-Class Wines"
+                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2">Climate</label>
+                            <input
+                                type="text"
+                                value={data.climate || ''}
+                                onChange={(e) => setData({ ...data, climate: e.target.value })}
+                                placeholder="e.g. Unique Microclimate"
+                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <div className="flex justify-end gap-4">

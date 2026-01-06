@@ -7,6 +7,8 @@ import Winery from '@/lib/models/Winery';
 import Wine from '@/lib/models/Wine';
 import { MapPin, Globe, Mail } from 'lucide-react';
 
+import Region from '@/lib/models/Region'; // Import Region model
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
     await connectToDatabase();
@@ -30,6 +32,17 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
     // Fetch wines for this winery
     const wines = await Wine.find({ wineryId: winery._id });
 
+    // Fetch Region name
+    let regionName = winery.region;
+    if (winery.region && winery.region.length === 24) { // Assuming ObjectId length
+        try {
+            const regionDoc = await Region.findById(winery.region);
+            if (regionDoc) regionName = regionDoc.name;
+        } catch (e) {
+            // If fetch fails, fallback to ID or whatever is stored
+        }
+    }
+
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white">
             {/* Hero */}
@@ -50,12 +63,12 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
                 <div className="relative z-10 text-center px-4 max-w-4xl">
                     <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full mb-6 border border-white/10">
                         <MapPin size={14} className="text-purple-400" />
-                        <span className="text-sm font-medium tracking-wide">{winery.region}, {winery.country}</span>
+                        <span className="text-sm font-medium tracking-wide">{regionName}, {winery.country}</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-bold font-playfair mb-6">{winery.name}</h1>
 
                     {/* Contact Links */}
-                    <div className="flex gap-4 justify-center">
+                    <div className="flex flex-wrap gap-4 justify-center">
                         {winery.websiteUrl && (
                             <a href={winery.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">
                                 <Globe size={16} /> Website
@@ -66,6 +79,11 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
                                 <Mail size={16} /> Email
                             </a>
                         )}
+                        {winery.phone && (
+                            <div className="flex items-center gap-2 text-sm text-gray-300">
+                                <span>📞 {winery.phone}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -75,7 +93,7 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
                 <div className="lg:col-span-2 space-y-12">
                     <section>
                         <h2 className="text-2xl font-playfair font-bold mb-6 border-b border-gray-800 pb-4">About the Winery</h2>
-                        <div className="prose prose-invert prose-lg max-w-none text-gray-300">
+                        <div className="prose prose-invert prose-lg max-w-none text-gray-300 whitespace-pre-wrap">
                             <p>{winery.description}</p>
                         </div>
                     </section>
@@ -104,15 +122,16 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
 
                 {/* Sidebar */}
                 <div className="space-y-8">
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                        <h3 className="font-bold text-lg mb-4">Location</h3>
-                        <p className="text-gray-300 mb-4">{winery.location}</p>
-                        {/* Add Map placeholder if needed */}
-                    </div>
+                    {winery.location && (
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                            <h3 className="font-bold text-lg mb-4">Location</h3>
+                            <p className="text-gray-300 mb-4">{winery.location}</p>
+                        </div>
+                    )}
                     {winery.isFeatured && (
                         <div className="bg-gradient-to-br from-purple-900/40 to-blue-900/20 border border-purple-500/30 rounded-xl p-6">
                             <h3 className="font-bold text-lg mb-2 text-purple-300">Grapeyear Selection</h3>
-                            <p className="text-sm text-gray-300">This winery is recognized for its exceptional quality and contribution to the {winery.region} region.</p>
+                            <p className="text-sm text-gray-300">This winery is recognized for its exceptional quality and contribution to the {regionName} region.</p>
                         </div>
                     )}
                 </div>

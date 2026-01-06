@@ -146,6 +146,16 @@ export default function WineryDetailPage({ params }: { params: Promise<{ id: str
                             />
                         </div>
                         <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2">Location</label>
+                            <input
+                                type="text"
+                                value={data.location || ''}
+                                onChange={(e) => setData({ ...data, location: e.target.value })}
+                                placeholder="e.g. Margaux, France"
+                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
+                            />
+                        </div>
+                        <div>
                             <label className="block text-sm font-bold text-gray-400 mb-2">Email</label>
                             <input
                                 type="email"
@@ -153,6 +163,16 @@ export default function WineryDetailPage({ params }: { params: Promise<{ id: str
                                 onChange={(e) => setData({ ...data, email: e.target.value })}
                                 className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
                                 placeholder="contact@winery.com"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2">Phone</label>
+                            <input
+                                type="tel"
+                                value={data.phone || ''}
+                                onChange={(e) => setData({ ...data, phone: e.target.value })}
+                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
+                                placeholder="+33 5 57 88 30 40"
                             />
                         </div>
                         <div>
