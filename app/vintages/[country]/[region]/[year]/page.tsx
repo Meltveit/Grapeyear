@@ -378,9 +378,17 @@ export default async function VintagePage({ params }: PageParams) {
 
                 {/* Global Destinations Section */}
                 <div className="mt-20 pt-10 border-t border-white/10">
-                    <h2 className="text-3xl font-playfair font-bold text-white mb-8">
-                        Explore other Wine Nations
-                    </h2>
+                    <div className="flex items-end justify-between mb-8">
+                        <h2 className="text-3xl font-playfair font-bold text-white">
+                            Explore other Wine Nations
+                        </h2>
+                        <Link
+                            href="/vineyards"
+                            className="text-purple-400 hover:text-purple-300 transition-colors flex items-center"
+                        >
+                            Explore All Regions <ChevronRight className="w-4 h-4 ml-1" />
+                        </Link>
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {randomCountries.map((c: any) => (
