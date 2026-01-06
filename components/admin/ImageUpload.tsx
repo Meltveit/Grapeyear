@@ -20,9 +20,9 @@ export default function ImageUpload({ value, onChange, label = "Image" }: ImageU
 
         const file = e.target.files[0];
 
-        // 1. Client-side Size Check (Max 4.5MB)
-        if (file.size > 4.5 * 1024 * 1024) {
-            setError("File is too large. Max 4.5MB.");
+        // 1. Client-side Size Check (Max 4MB - safe limit for Vercel)
+        if (file.size > 4 * 1024 * 1024) {
+            setError("File is too large. Max 4MB.");
             if (fileInputRef.current) fileInputRef.current.value = '';
             return;
         }
