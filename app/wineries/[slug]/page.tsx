@@ -105,14 +105,14 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
                     <li><Link href="/vineyards" className="hover:text-white transition-colors">Vineyards</Link></li>
                     <li className="text-gray-600">/</li>
                     <li>
-                        <Link href={`/vineyards/${countryCode}`} className="hover:text-white transition-colors">
+                        <Link href={`/vineyards/${breadcrumbCountrySlug}`} className="hover:text-white transition-colors">
                             {winery.country}
                         </Link>
                     </li>
                     <li className="text-gray-600">/</li>
-                    {regionDoc && regionDoc.slug ? (
+                    {breadcrumbRegionSlug !== "#" ? (
                         <li>
-                            <Link href={`/vineyards/${countryCode}/${regionDoc.slug}`} className="hover:text-white transition-colors">
+                            <Link href={`/vineyards/${breadcrumbCountrySlug}/${breadcrumbRegionSlug}`} className="hover:text-white transition-colors">
                                 {regionName}
                             </Link>
                         </li>
@@ -120,7 +120,7 @@ export default async function WineryPage({ params }: { params: Promise<{ slug: s
                         <li>{regionName}</li>
                     )}
                     <li className="text-gray-600">/</li>
-                    <li className="text-white" aria-current="page">{winery.name}</li>
+                    <li className="text-white bg-white/10 px-2 py-0.5 rounded-md" aria-current="page">{winery.name}</li>
                 </ol>
             </nav>
 
