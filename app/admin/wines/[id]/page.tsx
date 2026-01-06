@@ -14,6 +14,33 @@ export default function WineDetailPage({ params }: { params: Promise<{ id: strin
     const [data, setData] = useState<any>(null);
     const [message, setMessage] = useState({ text: '', type: '' });
     const [wineryId, setWineryId] = useState('');
+    const [vintageData, setVintageData] = useState<any>(null);
+
+    // Fetch vintage score when year or wineryId changes
+    useEffect(() => {
+        if (!data?.year || !wineryId) {
+            setVintageData(null);
+            return;
+        }
+
+        const fetchScore = async () => {
+            try {
+                const res = await fetch(`/api/admin/wines/score?wineryId=${wineryId}&year=${data.year}`);
+                const json = await res.json();
+                if (json.found) {
+                    setVintageData(json);
+                } else {
+                    setVintageData(null);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        // Debounce slightly 
+        const timeout = setTimeout(fetchScore, 500);
+        return () => clearTimeout(timeout);
+    }, [data?.year, wineryId]);
 
     useEffect(() => {
         async function fetchData() {
@@ -139,6 +166,39 @@ export default function WineDetailPage({ params }: { params: Promise<{ id: strin
                             </select>
                         </div>
                         <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2">Vintage Year</label>
+                            <input
+                                type="number"
+                                value={data.year || ''}
+                                onChange={(e) => setData({ ...data, year: e.target.value ? parseInt(e.target.value) : '' })}
+                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
+                                placeholder="YYYY"
+                            />
+                            {/* Vintage Score Card */}
+                            {vintageData && (
+                                <div className="mt-4 p-4 bg-white/5 border border-purple-500/30 rounded-lg animate-in fade-in slide-in-from-top-2">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className={`
+                                            w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg
+                                            ${vintageData.score >= 90 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50' :
+                                                vintageData.score >= 80 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50' : 'bg-gray-700 text-gray-400'}
+                                        `}>
+                                            {vintageData.score}
+                                        </div>
+                                        <div>
+                                            <div className="text-xs text-gray-400 uppercase tracking-widest">Regional Score</div>
+                                            <div className="font-bold text-white capitalize">{vintageData.quality || 'Unrated'}</div>
+                                        </div>
+                                    </div>
+                                    {vintageData.summary && (
+                                        <p className="text-xs text-gray-400 italic mt-1 line-clamp-2">
+                                            "{vintageData.summary}"
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        <div>
                             <label className="block text-sm font-bold text-gray-400 mb-2">Image URL</label>
                             <input
                                 type="text"
@@ -194,7 +254,7 @@ export default function WineDetailPage({ params }: { params: Promise<{ id: strin
                         {saving ? 'Saving...' : 'Save Changes'}
                     </button>
                 </div>
-            </form>
-        </div>
+            </form >
+        </div >
     );
 }

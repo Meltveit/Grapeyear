@@ -158,6 +158,30 @@ export default function RegionDetailPage({ params }: { params: Promise<{ id: str
                     </button>
                 </div>
             </form>
+
+            {/* Wineries Management Section */}
+            <div className="mt-12 pt-8 border-t border-gray-700">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 className="text-2xl font-bold font-playfair mb-2">Wineries</h2>
+                        <p className="text-gray-400 text-sm">Manage wineries and vineyards in {data.name}</p>
+                    </div>
+                    <div className="flex gap-4">
+                        <Link
+                            href={`/admin/regions/${id}/wineries`}
+                            className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-colors border border-gray-600"
+                        >
+                            View All
+                        </Link>
+                        <Link
+                            href={`/admin/regions/${id}/wineries/new`}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            <span>+</span> Add Winery
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

@@ -20,6 +20,9 @@ const WineSchema = new mongoose.Schema({
         enum: ['Red', 'White', 'Sparkling', 'Rosé', 'Dessert', 'Fortified'],
         required: true,
     },
+    year: {
+        type: Number, // Vintage Year
+    },
     grapeVarieties: [{
         type: String,
     }],
