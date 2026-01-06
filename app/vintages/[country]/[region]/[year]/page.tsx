@@ -21,31 +21,53 @@ interface PageParams {
 }
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
-    const { region, year } = await params;
+    const { country, region, year } = await params;
     const regionName = region.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
     // Find regional image
     const staticRegion = TOP_REGIONS.find(r => r.slug === region);
     const ogImage = staticRegion?.imageUrl || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200';
 
-    const canonicalCountryCode = staticRegion?.countryCode.toLowerCase() || 'unknown';
+    // Fetch Vintage Data for Rich Metadata
+    let titleDetail = '';
+    let descriptionDetail = `Detailed climate analysis for ${regionName} ${year}. See GDD, rainfall, and AI-driven vintage quality assessment.`;
+
+    try {
+        await dbConnect();
+        const regionDoc = await Region.findOne({ slug: region }).select('_id').lean();
+
+        if (regionDoc) {
+            const vintage = await Vintage.findOne({
+                regionId: regionDoc._id,
+                year: parseInt(year)
+            }).select('grapeyearScore quality aiSummary').lean();
+
+            if (vintage) {
+                titleDetail = ` - Score: ${vintage.grapeyearScore}`;
+                const shortSummary = vintage.aiSummary ? vintage.aiSummary.split('.')[0] + '.' : '';
+                descriptionDetail = `${vintage.quality} Vintage (${vintage.grapeyearScore} pts). ${shortSummary} Comprehensive growing season analysis.`;
+            }
+        }
+    } catch (e) {
+        console.error('Metadata fetch error', e);
+    }
 
     return {
-        title: `${regionName} ${year} Vintage Report | Grapeyear`,
-        description: `Detailed climate analysis for ${regionName} ${year}. See GDD, rainfall, and AI-driven vintage quality assessment.`,
+        title: `${regionName} ${year} Vintage Report${titleDetail} | Grapeyear`,
+        description: descriptionDetail,
         openGraph: {
             title: `${regionName} ${year} | Vintage Intelligence`,
-            description: `Was ${year} a good year for ${regionName}? See the climate data behind the vintage.`,
+            description: descriptionDetail,
             images: [{ url: ogImage, width: 1200, height: 630 }],
         },
         twitter: {
             card: 'summary_large_image',
             title: `${regionName} ${year} | Vintage Intelligence`,
-            description: `Detailed climate report for ${regionName} ${year}.`,
+            description: descriptionDetail,
             images: [ogImage],
         },
         alternates: {
-            canonical: `/vintages/${canonicalCountryCode}/${region}/${year}`,
+            canonical: `/vintages/${country.toLowerCase()}/${region}/${year}`,
         }
     };
 }
