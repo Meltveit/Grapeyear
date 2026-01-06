@@ -1,4 +1,21 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+
+export interface IRegion extends Document {
+    name: string;
+    slug: string;
+    countryId?: mongoose.Types.ObjectId;
+    country: string;
+    countryCode: string;
+    description?: string;
+    location: {
+        type: 'Point';
+        coordinates: number[];
+    };
+    imageUrl?: string;
+    isTopRegion: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 const RegionSchema = new mongoose.Schema({
     name: {
@@ -14,8 +31,7 @@ const RegionSchema = new mongoose.Schema({
     countryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Country',
-        // Not required YET to allow migration of existing data, but intended to be required.
-        // Making it optional for now to prevent breaking existing queries if any assume shape.
+        // Not required YET to allow migration of existing data
     },
     country: {
         type: String, // Kept for backward compatibility/Legacy
@@ -41,4 +57,4 @@ const RegionSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-export default mongoose.models.Region || mongoose.model('Region', RegionSchema);
+export default mongoose.models.Region || mongoose.model<IRegion>('Region', RegionSchema);
