@@ -34,7 +34,13 @@ const WinerySchema = new mongoose.Schema({
         type: String,
     },
     phone: {
-        type: String,
+        type: String, // Contact phone
+    },
+    metaTitle: {
+        type: String, // SEO Title
+    },
+    metaDescription: {
+        type: String, // SEO Description
     },
     isFeatured: {
         type: Boolean,

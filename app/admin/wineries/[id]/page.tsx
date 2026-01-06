@@ -220,14 +220,48 @@ export default function WineryDetailPage({ params }: { params: Promise<{ id: str
                     </div>
                 </div >
 
-                <div className="flex justify-end gap-4">
-                    <Link href={`/admin/regions/${data.region}/wineries`} className="px-6 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                {/* SEO Settings */}
+                <div className="bg-[#111111] border border-white/10 rounded-xl p-6 space-y-6">
+                    <h2 className="text-xl font-bold text-purple-300 border-b border-white/10 pb-4">SEO Settings</h2>
+
+                    <div className="grid grid-cols-1 gap-6">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2">Meta Title</label>
+                            <input
+                                type="text"
+                                value={data.metaTitle || ''}
+                                onChange={(e) => setData({ ...data, metaTitle: e.target.value })}
+                                placeholder="Custom Title Tag (defaults to Name | Grapeyear)"
+                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Recommended length: 50-60 characters</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-bold text-gray-400 mb-2">Meta Description</label>
+                            <textarea
+                                value={data.metaDescription || ''}
+                                onChange={(e) => setData({ ...data, metaDescription: e.target.value })}
+                                placeholder="Custom Meta Description (defaults to summary)"
+                                rows={3}
+                                className="w-full bg-black/30 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Recommended length: 150-160 characters</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-6 border-t border-white/10 mt-8">
+                    <Link
+                        href="/admin/dashboard"
+                        className="px-6 py-2 rounded-lg font-bold text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                    >
                         Cancel
                     </Link>
                     <button
-                        type="submit"
+                        onClick={handleSave}
                         disabled={saving}
-                        className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg transition-colors disabled:opacity-50"
+                        className="px-6 py-2 rounded-lg font-bold text-black bg-purple-500 hover:bg-purple-400 disabled:opacity-50 transition-colors flex items-center gap-2"
                     >
                         {saving ? 'Saving...' : 'Save Changes'}
                     </button>

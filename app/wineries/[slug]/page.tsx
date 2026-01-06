@@ -13,41 +13,90 @@ import RecommendationSidebar from '../components/RecommendationSidebar';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
     await connectToDatabase();
-    const winery = await Winery.findOne({ slug });
 
-    if (!winery) return { title: 'Winery Not Found' };
+    // Explicitly select meta fields
+    const winery = await Winery.findOne({ slug }).select('name description metaTitle metaDescription imageUrl');
+
+    if (!winery) {
+        return {
+            title: 'Winery Not Found',
+        };
+    }
+
+    // Use custom meta tags if available, otherwise fallback to defaults
+    const title = winery.metaTitle || `${winery.name} | Grapeyear`;
+    const description = winery.metaDescription || winery.description?.substring(0, 160) || `Discover ${winery.name} on Grapeyear.`;
 
     return {
-        title: `${winery.name} - Winery Profile | Grapeyear`,
-        description: winery.description?.substring(0, 160) || `Explore wines from ${winery.name} on Grapeyear.`,
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            images: winery.imageUrl ? [winery.imageUrl] : [],
+        },
     };
 }
 
 export default async function WineryPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
     await connectToDatabase();
-
     const winery = await Winery.findOne({ slug });
-    if (!winery) notFound();
+
+    if (!winery) {
+        notFound();
+    }
 
     // Fetch wines for this winery
     const wines = await Wine.find({ wineryId: winery._id });
 
-    // Fetch Region details
-    let regionDoc = null;
-    if (winery.region && winery.region.length === 24) { // Assuming ObjectId length
+    let regionName = "Unknown Region";
+    let countryName = winery.country; // Default to winery's country
+    let breadcrumbRegionSlug = "#";
+    let breadcrumbCountrySlug = winery.country.toLowerCase().replace(/\s+/g, '-'); // Default to winery's country slug
+
+    if (winery.region) {
         try {
-            regionDoc = await Region.findById(winery.region);
+            const region = await Region.findById(winery.region);
+            if (region) {
+                regionName = region.name;
+                countryName = region.country; // Assuming region has country code/name
+
+                // Construct slugs (simplified logic, ideally fetch full objects if slugs differ from names)
+                breadcrumbCountrySlug = region.country.toLowerCase().replace(/\s+/g, '-');
+                breadcrumbRegionSlug = region.slug;
+            }
         } catch (e) {
-            // If fetch fails
+            console.error("Error fetching region:", e);
         }
     }
-    const regionName = regionDoc?.name || winery.region;
-    // Fallback for country code if missing in region or if region fetch failed
-    const countryCode = regionDoc?.countryCode || winery.country.toLowerCase().replace(/ /g, '-');
+
+    // JSON-LD Schema for SEO
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Winery',
+        name: winery.name,
+        image: winery.imageUrl,
+        description: winery.description,
+        url: `https://grapeyear.com/wineries/${winery.slug}`,
+        telephone: winery.phone,
+        address: {
+            '@type': 'PostalAddress',
+            addressLocality: winery.location,
+            addressCountry: winery.country
+        },
+        sameAs: winery.websiteUrl,
+        priceRange: '$$$' // Optional placeholder
+    };
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white">
+            {/* Schema Markup */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+
             {/* Breadcrumbs */}
             <nav aria-label="Breadcrumb" className="absolute top-0 left-0 w-full p-6 z-20">
                 <ol className="flex flex-wrap items-center gap-2 text-sm text-gray-400">
