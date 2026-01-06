@@ -19,7 +19,8 @@ export async function POST(req: Request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+        // Use gemini-1.5-flash for speed if available, or fall back to 1.5-pro or pro.
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
         // Context setting based on type
         let systemInstruction = "You are an expert wine writer for Grapeyear, a premium wine platform. Write STRICTLY in English. ";
@@ -35,13 +36,33 @@ export async function POST(req: Request) {
             systemInstruction += "Write a flexible intro template for a country's wine scene. Use placeholders like {Year} to make it dynamic.";
         }
 
+        console.log(`[AI] Generating for type: ${type}`);
+        console.log(`[AI] System Instruction: ${systemInstruction.substring(0, 50)}...`);
+
         const fullPrompt = `${systemInstruction}\n\nTask: ${prompt}`;
 
-        const result = await model.generateContent(fullPrompt);
-        const response = await result.response;
-        const text = response.text();
+        try {
+            const result = await model.generateContent(fullPrompt);
+            const response = await result.response;
+            const text = response.text();
+            console.log(`[AI] Success. Length: ${text.length}`);
 
-        return NextResponse.json({ text });
+            return NextResponse.json({ text });
+        } catch (apiError) {
+            console.error("[AI] Gemini API Error:", apiError);
+            // Fallback to gemini-pro if flash fails (handling older keys/regions)
+            try {
+                console.log("[AI] Retrying with gemini-pro...");
+                const fallbackModel = genAI.getGenerativeModel({ model: 'gemini-pro' });
+                const result = await fallbackModel.generateContent(fullPrompt);
+                const response = await result.response;
+                const text = response.text();
+                return NextResponse.json({ text });
+            } catch (fallbackError) {
+                console.error("[AI] Fallback failed:", fallbackError);
+                return NextResponse.json({ error: 'AI Service Unavailable' }, { status: 500 });
+            }
+        }
     } catch (error) {
         console.error('AI Generation Error:', error);
         return NextResponse.json(
