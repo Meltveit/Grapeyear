@@ -101,21 +101,7 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
                     </div>
                 </div>
 
-                {/* Intro / Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                    <div className="bg-white/5 p-6 rounded-2xl border border-white/5 text-center">
-                        <div className="text-purple-400 font-bold mb-1">Country</div>
-                        <div className="text-xl">{countryName}</div>
-                    </div>
-                    <div className="bg-white/5 p-6 rounded-2xl border border-white/5 text-center">
-                        <div className="text-purple-400 font-bold mb-1">Famous For</div>
-                        <div className="text-xl">World-Class Wines</div>
-                    </div>
-                    <div className="bg-white/5 p-6 rounded-2xl border border-white/5 text-center">
-                        <div className="text-purple-400 font-bold mb-1">Climate</div>
-                        <div className="text-xl">Unique Microclimate</div>
-                    </div>
-                </div>
+
 
                 {/* Wineries List */}
                 <div className="mb-20">
