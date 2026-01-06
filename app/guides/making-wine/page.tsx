@@ -96,6 +96,21 @@ export default function MakingWineGuide() {
                         After 5-7 days, when the SG drops to around 1.000, fermentation slows. Press the skins to extract the last wine, then siphon (rack) the liquid into your glass carboy. Fill it to the neck to minimize oxygen exposure. Attach the airlock.
                     </p>
 
+                    <div className="bg-blue-900/20 border-l-4 border-blue-500 p-4 my-4 text-sm">
+                        <strong>Advanced Tip (Red Wines):</strong> If making a full-bodied red, you might want <em>Malolactic Fermentation (MLF)</em>. This converts harsh malic acid into soft lactic acid (like in milk). You add MLF bacteria now, during secondary fermentation.
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-white mt-8 mb-4">Step 5: Aging, Clearing & Bottling</h3>
+                    <p>
+                        Patience is key. Let the wine sit in the carboy for 3-12 months (Reds need longer than Whites). Rack it every 2-3 months to remove sediment.
+                        <br /><br />
+                        <strong>When to Bottle:</strong> When the wine is crystal clear and stable (no bubbles for weeks).
+                        <br />
+                        <strong>Stabilization:</strong> If you plan to back-sweeten, you MUST add <em>Potassium Sorbate</em> and sulfites to prevent corks from popping.
+                        <br />
+                        <strong>Bottling:</strong> Sanitize bottles. Siphon wine in, leaving an inch of headspace. Cork immediately. Lay bottles on their side for 3 days to hydrate the cork.
+                    </p>
+
                     <h2 className="text-3xl font-playfair font-bold text-purple-200 mt-16 mb-6">3. Deep Dive: Choosing Your Yeast</h2>
                     <p>
                         Never rely on "bread yeast". Using the right strain gives you control over the flavor profile.
