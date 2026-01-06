@@ -63,12 +63,12 @@ export async function POST(req: Request) {
         const fullPrompt = `${systemInstruction}\n\nTask: ${prompt}\n\n${isJson ? 'OUTPUT STRICT JSON.' : ''}`;
 
         const modelsToTry = [
-            'gemini-1.5-flash',
-            'gemini-1.5-flash-001',
-            'gemini-1.5-flash-8b',
-            'gemini-1.5-pro',
-            'gemini-pro',
-            'gemini-1.0-pro'
+            'gemini-2.5-pro',        // Best for High Quality Writing / SEO
+            'gemini-3-pro-preview',  // Cutting Edge
+            'gemini-2.5-flash',      // Fallback
+            'gemini-2.0-flash',
+            'gemini-flash-latest',
+            'gemini-pro-latest'
         ];
 
         let lastError = null;
