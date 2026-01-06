@@ -61,6 +61,8 @@ export default function RootLayout({
         {/* Preconnect to external origins for better performance */}
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://api.open-meteo.com" />
+        <link rel="dns-prefetch" href="https://api.open-meteo.com" />
       </head>
       <body className="bg-[#0a0a0a] text-white antialiased font-sans">
         <script

@@ -75,23 +75,23 @@ export default async function Home() {
       {/* Hero Section */}
       <div className="relative h-[80vh] flex flex-col items-center justify-center overflow-hidden">
         {/* Optimized Hero Background Image */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop"
-            alt="Vineyard landscape"
-            fill
-            priority
-            quality={75}
-            className="object-cover opacity-20"
-            sizes="100vw"
-          />
-        </div>
-        {/* Abstract Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-[#0a0a0a] to-[#0a0a0a] z-0 pointer-events-none" />
+        <Image
+          src="/images/regions/bordeaux.jpg"
+          alt="Bordeaux vineyards"
+          fill
+          priority
+          fetchPriority="high"
+          quality={85}
+          className="object-cover"
+          sizes="100vw"
+        />
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/40 z-10" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-transparent to-[#0a0a0a] z-10" />
 
         {/* Navigation */}
-        {/* Navigation */}
-        <nav className="absolute top-0 left-0 w-full p-6 z-20 grid grid-cols-3 items-center">
+        <nav className="absolute top-0 left-0 w-full p-6 z-30 grid grid-cols-3 items-center">
           <div className="font-playfair font-bold text-2xl text-white tracking-tighter">Grapeyear</div>
 
           {/* Centered Button */}
@@ -107,7 +107,7 @@ export default async function Home() {
           <div></div>
         </nav>
 
-        <div className="relative z-10 container mx-auto px-4 text-center">
+        <div className="relative z-20 container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-7xl font-playfair font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">
             The Digital Terroir
           </h1>
