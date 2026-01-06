@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         // Use gemini-1.5-flash for speed if available, or fall back to 1.5-pro or pro.
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        // const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }); -> MOVED TO LOOP
 
         // Context setting based on type
         // Context setting based on type
@@ -62,28 +62,38 @@ export async function POST(req: Request) {
 
         const fullPrompt = `${systemInstruction}\n\nTask: ${prompt}\n\n${isJson ? 'OUTPUT STRICT JSON.' : ''}`;
 
-        try {
-            const result = await model.generateContent(fullPrompt);
-            const response = await result.response;
-            const text = response.text();
-            console.log(`[AI] Success. Length: ${text.length}`);
+        const modelsToTry = [
+            'gemini-1.5-flash',
+            'gemini-1.5-flash-001',
+            'gemini-1.5-flash-8b',
+            'gemini-1.5-pro',
+            'gemini-pro',
+            'gemini-1.0-pro'
+        ];
 
-            return NextResponse.json({ text });
-        } catch (apiError) {
-            console.error("[AI] Gemini API Error:", apiError);
-            // Fallback to gemini-pro if flash fails (handling older keys/regions)
+        let lastError = null;
+
+        for (const modelName of modelsToTry) {
             try {
-                console.log("[AI] Retrying with gemini-pro...");
-                const fallbackModel = genAI.getGenerativeModel({ model: 'gemini-pro' });
-                const result = await fallbackModel.generateContent(fullPrompt);
+                console.log(`[AI] Attempting with model: ${modelName}`);
+                const model = genAI.getGenerativeModel({ model: modelName });
+
+                const result = await model.generateContent(fullPrompt);
                 const response = await result.response;
                 const text = response.text();
+
+                console.log(`[AI] Success with ${modelName}. Length: ${text.length}`);
                 return NextResponse.json({ text });
-            } catch (fallbackError) {
-                console.error("[AI] Fallback failed:", fallbackError);
-                return NextResponse.json({ error: 'AI Service Unavailable' }, { status: 500 });
+
+            } catch (err: any) {
+                console.error(`[AI] Failed with ${modelName}:`, err.message);
+                lastError = err;
+                // Continue to next model
             }
         }
+
+        console.error("[AI] All models failed.");
+        return NextResponse.json({ error: 'AI Service Unavailable: ' + (lastError?.message || 'Unknown') }, { status: 500 });
     } catch (error) {
         console.error('AI Generation Error:', error);
         return NextResponse.json(
