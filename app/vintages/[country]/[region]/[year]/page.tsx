@@ -154,6 +154,8 @@ export default async function VintagePage({ params }: PageParams) {
             _id: name,
             name: name,
             code: r?.countryCode.toLowerCase() || 'un',
+            // Use name for URL link
+            linkSlug: name.toLowerCase(),
             imageUrl: COUNTRY_IMAGES[name] || r?.imageUrl || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=800'
         };
     });
@@ -394,7 +396,7 @@ export default async function VintagePage({ params }: PageParams) {
                         {randomCountries.map((c: any) => (
                             <Link
                                 key={c._id}
-                                href={`/vineyards/${c.code.toLowerCase()}`}
+                                href={`/vineyards/${c.linkSlug}`}
                                 className="group relative aspect-[16/9] rounded-xl overflow-hidden block border border-white/5 hover:border-white/20 transition-all"
                             >
                                 <div className="absolute inset-0">

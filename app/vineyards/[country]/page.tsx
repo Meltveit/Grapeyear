@@ -27,13 +27,14 @@ export default async function CountryVineyardsPage({ params }: PageParams) {
     // Clean up country code check
     const normalizedCountryCode = country.toLowerCase();
 
-    // Filter regions belonging to this country
+    // Filter regions belonging to this country (match Code OR Name)
     const regions = TOP_REGIONS.filter(
-        r => r.countryCode.toLowerCase() === normalizedCountryCode
+        r => r.countryCode.toLowerCase() === normalizedCountryCode ||
+            r.country.toLowerCase() === normalizedCountryCode
     );
 
     if (!regions.length) {
-        // Simple 404 if no regions found for this country code
+        // Simple 404 if no regions found
         return notFound();
     }
 
@@ -106,7 +107,7 @@ export default async function CountryVineyardsPage({ params }: PageParams) {
                                 return (
                                     <Link
                                         key={c}
-                                        href={`/vineyards/${r?.countryCode.toLowerCase()}`}
+                                        href={`/vineyards/${c.toLowerCase()}`}
                                         className="block p-4 bg-white/5 rounded-xl text-center hover:bg-white/10 transition-colors border border-white/5"
                                     >
                                         <span className="text-lg font-playfair">{c}</span>

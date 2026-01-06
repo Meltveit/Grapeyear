@@ -201,7 +201,7 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
                             TOP_REGIONS.filter(r => r.country !== countryName).slice(0, 2).map(r => (
                                 <Link
                                     key={r.slug}
-                                    href={`/vineyards/${r.countryCode.toLowerCase()}/${r.slug}`}
+                                    href={`/vineyards/${r.country.toLowerCase()}/${r.slug}`}
                                     className="block p-4 bg-white/5 rounded-xl text-center hover:bg-white/10 transition-colors border border-white/5"
                                 >
                                     <span className="text-xs uppercase text-purple-400 block mb-1">{r.country}</span>
