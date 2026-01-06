@@ -13,11 +13,9 @@ const WinerySchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
     },
     country: {
         type: String,
-        required: true,
     },
     region: {
         type: String,
@@ -25,7 +23,6 @@ const WinerySchema = new mongoose.Schema({
     },
     location: {
         type: String,
-        required: true,
     },
     imageUrl: {
         type: String, // URL from Blob storage
