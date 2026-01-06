@@ -17,17 +17,36 @@ export async function GET(request: Request) {
 
         const regex = new RegExp(query, 'i');
 
-        // 1. Match Countries (from Constants)
-        // We import TOP_REGIONS from '@/lib/constants' (Make sure to import it at top)
-        // Since we can't import inside function easily if not already top-level, I'll assume I need to add the import.
+        // 2. Detect Year in Query (for Vintage Reports)
+        // e.g. "Burgundy 2013" -> Year: 2013, Text: "Burgundy"
+        const yearMatch = query.match(/\b(19|20)\d{2}\b/);
+        let vintageResults: any[] = [];
 
-        // Let's rely on DB distinct or just searching Region by country for now, 
-        // OR better: Check if the query matches a country and create a result for it.
-        // Actually, searching Regions by country is the most organic way. 
-        // IF we search "Argentina", we get Mendoza.
-        // IF we want "Argentina" as a result, we can deduce it.
+        if (yearMatch) {
+            const year = parseInt(yearMatch[0]);
+            const textQuery = query.replace(yearMatch[0], '').trim(); // "Burgundy " -> "Burgundy"
 
-        // Let's implement the dual query for Regions first.
+            if (textQuery.length >= 2) {
+                const regionMatches = await Region.find({
+                    $or: [
+                        { name: new RegExp(textQuery, 'i') },
+                        { slug: new RegExp(textQuery, 'i') }
+                    ]
+                }).select('name slug countryCode imageUrl country').limit(1).lean();
+
+                if (regionMatches.length > 0) {
+                    const r = regionMatches[0];
+                    vintageResults.push({
+                        name: `${r.name} ${year} Vintage`,
+                        type: 'vintage',
+                        url: `/vintages/${(r as any).countryCode?.toLowerCase() || 'fr'}/${r.slug}/${year}`,
+                        imageUrl: r.imageUrl,
+                        year: year,
+                        country: (r as any).country
+                    });
+                }
+            }
+        }
 
         const [regions, wineries, wines] = await Promise.all([
             // Search by Name OR Country
@@ -59,6 +78,7 @@ export async function GET(request: Request) {
         }));
 
         const results = [
+            ...vintageResults, // Show specific vintage report first
             ...countryResults,
             ...regions.map(r => ({
                 ...r,

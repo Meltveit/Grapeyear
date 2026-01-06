@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, MapPin, Wine, Globe, Store } from 'lucide-react';
+import { Search, MapPin, Wine, Globe, Store, Calendar } from 'lucide-react';
 import debounce from 'lodash/debounce';
 
 export default function SearchBar() {
@@ -98,14 +98,16 @@ export default function SearchBar() {
                                         item.type === 'region' ? <MapPin className="h-5 w-5 text-purple-400" /> :
                                             item.type === 'winery' ? <Store className="h-5 w-5 text-emerald-400" /> :
                                                 item.type === 'wine' ? <Wine className="h-5 w-5 text-pink-400" /> :
-                                                    item.type === 'country' ? <Globe className="h-5 w-5 text-blue-400" /> :
-                                                        <Globe className="h-5 w-5 text-gray-400" />
+                                                    item.type === 'vintage' ? <Calendar className="h-5 w-5 text-orange-400" /> :
+                                                        item.type === 'country' ? <Globe className="h-5 w-5 text-blue-400" /> :
+                                                            <Globe className="h-5 w-5 text-gray-400" />
                                     )}
                                     {/* Type Indicator */}
                                     <div className={`absolute bottom-0 left-0 right-0 h-1 ${item.type === 'region' ? 'bg-purple-500' :
                                         item.type === 'winery' ? 'bg-emerald-500' :
                                             item.type === 'wine' ? 'bg-pink-500' :
-                                                item.type === 'country' ? 'bg-blue-500' : 'bg-gray-500'
+                                                item.type === 'vintage' ? 'bg-orange-500' :
+                                                    item.type === 'country' ? 'bg-blue-500' : 'bg-gray-500'
                                         }`} />
                                 </div>
                                 <div>
