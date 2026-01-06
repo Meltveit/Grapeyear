@@ -155,6 +155,40 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
                         View Vintage Report <ChevronRight className="w-4 h-4 ml-2" />
                     </Link>
                 </div>
+
+                {/* Internal Linking: Other Regions in Same Country */}
+                <div className="mt-24 border-t border-white/10 pt-16">
+                    <h3 className="text-2xl font-playfair font-bold mb-8 text-center">
+                        More Regions in {countryName}
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {TOP_REGIONS.filter(r => r.country === countryName && r.slug !== regionSlug)
+                            .slice(0, 4)
+                            .map(r => (
+                                <Link
+                                    key={r.slug}
+                                    href={`/vineyards/${country.toLowerCase()}/${r.slug}`}
+                                    className="block p-4 bg-white/5 rounded-xl text-center hover:bg-white/10 transition-colors border border-white/5"
+                                >
+                                    <span className="text-lg font-playfair">{r.name}</span>
+                                </Link>
+                            ))}
+
+                        {/* Fallback if few regions in country: Show popular global regions */}
+                        {TOP_REGIONS.filter(r => r.country === countryName && r.slug !== regionSlug).length < 2 &&
+                            TOP_REGIONS.filter(r => r.country !== countryName).slice(0, 2).map(r => (
+                                <Link
+                                    key={r.slug}
+                                    href={`/vineyards/${r.countryCode.toLowerCase()}/${r.slug}`}
+                                    className="block p-4 bg-white/5 rounded-xl text-center hover:bg-white/10 transition-colors border border-white/5"
+                                >
+                                    <span className="text-xs uppercase text-purple-400 block mb-1">{r.country}</span>
+                                    <span className="text-lg font-playfair">{r.name}</span>
+                                </Link>
+                            ))
+                        }
+                    </div>
+                </div>
             </div>
         </main>
     );

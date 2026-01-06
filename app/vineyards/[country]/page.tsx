@@ -91,6 +91,30 @@ export default async function CountryVineyardsPage({ params }: PageParams) {
                         </Link>
                     ))}
                 </div>
+
+                {/* Internal Linking: Other Countries */}
+                <div className="mt-24 border-t border-white/10 pt-16">
+                    <h3 className="text-2xl font-playfair font-bold mb-8 text-center">
+                        Explore Other Wine Destinations
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {Array.from(new Set(TOP_REGIONS.map(r => r.country)))
+                            .filter(c => c.toLowerCase() !== normalizedCountryCode && c !== countryName)
+                            .slice(0, 4) // Show up to 4 other countries
+                            .map(c => {
+                                const r = TOP_REGIONS.find(reg => reg.country === c);
+                                return (
+                                    <Link
+                                        key={c}
+                                        href={`/vineyards/${r?.countryCode.toLowerCase()}`}
+                                        className="block p-4 bg-white/5 rounded-xl text-center hover:bg-white/10 transition-colors border border-white/5"
+                                    >
+                                        <span className="text-lg font-playfair">{c}</span>
+                                    </Link>
+                                );
+                            })}
+                    </div>
+                </div>
             </div>
         </main>
     );
