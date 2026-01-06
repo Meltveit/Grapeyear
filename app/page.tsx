@@ -12,8 +12,14 @@ async function getTopVintages() {
     await dbConnect();
     void Region;
 
-    // 1. Fetch top 40 high-scoring vintages to get a good candidate pool
-    const vintages = await Vintage.find({ grapeyearScore: { $gte: 85 } })
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 10;
+
+    // 1. Fetch top 40 high-scoring vintages from the last 10 years
+    const vintages = await Vintage.find({
+      grapeyearScore: { $gte: 85 },
+      year: { $gte: startYear }
+    })
       .sort({ grapeyearScore: -1 })
       .limit(40)
       .populate('regionId')
@@ -66,6 +72,16 @@ export default async function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-[#0a0a0a] to-[#0a0a0a] z-0 pointer-events-none" />
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
 
+        {/* Navigation */}
+        <nav className="absolute top-0 left-0 w-full p-6 z-20 flex justify-between items-center">
+          <div className="font-playfair font-bold text-2xl text-white tracking-tighter">Grapeyear</div>
+          <div className="flex bg-white/10 backdrop-blur-md rounded-full p-1 border border-white/10">
+            <Link href="/vineyards" className="px-6 py-2 rounded-full hover:bg-white/10 transition-colors text-sm font-medium">
+              Vineyards
+            </Link>
+          </div>
+        </nav>
+
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-7xl font-playfair font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">
             The Digital Terroir
@@ -85,7 +101,7 @@ export default async function Home() {
         <section className="py-16 container mx-auto px-4 border-b border-white/5">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-playfair font-bold">Recommended Vintages</h2>
-            <div className="text-xs text-purple-400 uppercase tracking-widest">Highest Scores</div>
+            <div className="text-xs text-purple-400 uppercase tracking-widest">Last 10 Years</div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topVintages.map((v: TopVintageProps) => (
