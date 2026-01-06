@@ -120,33 +120,92 @@ export function generateVintageSummary(metrics: {
     sunshineHours: number;
     frostDays: number;
     regionName: string;
+    year: number;
+    heatSpikes?: number;
+    harvestRainMm?: number;
+    earlyFrostDays?: number;
+    lateFrostDays?: number;
+    droughtStressMaxDays?: number;
 }): string {
-    const { gdd, rainfall, sunshineHours, frostDays, regionName } = metrics;
-    const parts: string[] = [];
+    const {
+        gdd, rainfall, sunshineHours, frostDays, regionName, year,
+        heatSpikes = 0, harvestRainMm = 0, earlyFrostDays = 0, lateFrostDays = 0, droughtStressMaxDays = 0
+    } = metrics;
 
-    // Temperature / GDD context
-    if (gdd > 1800) parts.push("A warm vintage defined by generous heat accumulation");
-    else if (gdd < 1200) parts.push("A cool growing season requiring patience");
-    else parts.push("A classically balanced season with steady ripening");
+    // 1. Determine Vintage Style Profile
+    let style = "Classic";
+    if (gdd > 1750 && sunshineHours > 2200) style = "Powerhouse";
+    else if (gdd > 1650) style = "Opulent";
+    else if (gdd < 1250) style = "Lean";
+    else if (gdd < 1400) style = "Elegant";
 
-    // Sun / Water context
-    if (sunshineHours > 1800 && rainfall < 300) {
-        parts.push("abundant sunshine combined with dry conditions, leading to small, concentrated berries with rich flavor profiles");
-    } else if (rainfall > 600) {
-        parts.push("intermittent rainfall which restored water tables but required vigilant canopy management to prevent disease");
+    // 2. Select Introduction based on Style (SEO: Starts with Region + Year)
+    const intros = {
+        "Powerhouse": [
+            `${regionName} ${year} stands as a monumental vintage defined by immense power and density`,
+            `For ${regionName} in ${year}, an intense, solar growing season yielded wines of profound concentration`,
+            `${regionName} ${year} will be remembered as a warm, expressive season delivering fruit of exceptional seamlessness`
+        ],
+        "Opulent": [
+            `${regionName} ${year} was a generous season resulting in rich, textured wines with broad appeal`,
+            `Marked by abundance, ${regionName} ${year} produced wines with ripe, velvety tannins and significant depth`,
+            `Warm conditions in ${regionName} during ${year} favored a broad, expansive stylistic profile`
+        ],
+        "Classic": [
+            `${regionName} ${year} is a classically balanced season offering steady, even ripening throughout the harvest`,
+            `${year} in ${regionName} serves as a benchmark vintage, favors finesse and structural integrity over sheer power`,
+            `Transparency and terroir definition are the hallmarks of ${regionName} ${year}`
+        ],
+        "Elegant": [
+            `${regionName} ${year} was a cool, protracted growing season prioritizing aromatics, lift, and definition`,
+            `A focused vintage, ${year} in ${regionName} is defined by tension, energy, and vibrant acidity`,
+            `Patience was rewarded in ${regionName} ${year} with wines of crystalline purity and nerve`
+        ],
+        "Lean": [
+            `${regionName} ${year} proved to be a challenging, cool year requiring rigorous selection in the vineyard`,
+            `A vintage for purists, ${regionName} ${year} offers sharp lines, savory complexity, and moderate alcohol`,
+            `Cool temperatures in ${regionName} during ${year} preserved acidity but demanded low yields to achieve physiological ripeness`
+        ]
+    };
+
+    // Pick a random intro from the matching style
+    const selectedIntro = intros[style as keyof typeof intros][Math.floor(Math.random() * 3)];
+
+    // 3. Elaborate on conditions (Add complexity and unique variables)
+    const details: string[] = [];
+
+    // Sunshine & Ripeness context
+    if (heatSpikes > 5) {
+        details.push(`The season saw extreme heat, with ${heatSpikes} days over 35°C, demanding careful canopy management to prevent sunburn`);
+    } else if (sunshineHours > 2300) {
+        details.push(`The season was driven by relentless sunshine (${Math.round(sunshineHours)} hours), ensuring deep phenolic maturity without greenness`);
+    } else if (sunshineHours < 1800) {
+        details.push(`The profile was shaped by significant cloud cover (${Math.round(sunshineHours)} hours of sun), which preserved delicate floral aromatics but slowed sugar accumulation`);
     } else {
-        parts.push(`balanced by ${Math.round(rainfall)}mm of rainfall, allowing for gradual phenolic development`);
+        details.push(`Conditions were supported by optimal luminosity (${Math.round(sunshineHours)} hours of sun), allowing for gradual, seamless sugar accumulation`);
     }
 
-    // Frost context
-    if (frostDays > 2) {
-        parts.push(`however, difficult spring frost events (${frostDays} days) reduced yields significantly`);
+    // Rainfall / Disease pressure / Drought
+    if (droughtStressMaxDays > 40) {
+        details.push(`A severe mid-season drought (${droughtStressMaxDays} dry days) stressed the vines, concentrating juice but reducing yields`);
+    } else if (harvestRainMm > 80) {
+        details.push(`However, heavy late-season rains (${Math.round(harvestRainMm)}mm) complicated the harvest, requiring rapid picking and strict sorting`);
+    } else if (rainfall < 300) {
+        details.push(`Significant overall dryness (${Math.round(rainfall)}mm rain) restricted berry size, increasing skin-to-juice ratio and tannic structure`);
+    } else {
+        details.push(`The vine cycle was balanced by timely rains totaling ${Math.round(rainfall)}mm, which refreshed the vines without causing dilution`);
     }
 
-    // Join with simple grammar logic
-    let summary = parts.join(', ');
-    // capitalize first letter
-    summary = summary.charAt(0).toUpperCase() + summary.slice(1);
+    // Frost Impact (The "Plot Twist")
+    let frostText = "";
+    if (lateFrostDays > 2) {
+        frostText = ` Tragically, rare autumn frosts accelerated the harvest window and curtailed potential hang-time.`;
+    } else if (earlyFrostDays > 3) {
+        frostText = ` Early budding was met with severe spring frost (${earlyFrostDays} days), dramatically reducing crop levels but concentrating the remaining fruit.`;
+    } else if (frostDays > 0) {
+        frostText = ` Cooler nights (${frostDays} frost days) throughout the season helped retain fresh acidity despite the daytime warmth.`;
+    }
 
-    return `${summary} in ${regionName}.`;
+    // 4. Assemble with varied conjunctions
+    return `${selectedIntro}. ${details[0]}, and ${details[1].charAt(0).toLowerCase() + details[1].slice(1)}.${frostText}`;
 }

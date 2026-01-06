@@ -73,13 +73,21 @@ export default async function Home() {
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
 
         {/* Navigation */}
-        <nav className="absolute top-0 left-0 w-full p-6 z-20 flex justify-between items-center">
+        {/* Navigation */}
+        <nav className="absolute top-0 left-0 w-full p-6 z-20 grid grid-cols-3 items-center">
           <div className="font-playfair font-bold text-2xl text-white tracking-tighter">Grapeyear</div>
-          <div className="flex bg-white/10 backdrop-blur-md rounded-full p-1 border border-white/10">
-            <Link href="/vineyards" className="px-6 py-2 rounded-full hover:bg-white/10 transition-colors text-sm font-medium">
-              Vineyards
-            </Link>
+
+          {/* Centered Button */}
+          <div className="flex justify-center">
+            <div className="flex bg-white/10 backdrop-blur-md rounded-full p-1 border border-white/10 shadow-xl">
+              <Link href="/vineyards" className="px-8 py-2.5 rounded-full hover:bg-white/20 transition-all text-sm font-medium tracking-wide">
+                Explore Vineyards
+              </Link>
+            </div>
           </div>
+
+          {/* Empty right side for LiveMetrics */}
+          <div></div>
         </nav>
 
         <div className="relative z-10 container mx-auto px-4 text-center">

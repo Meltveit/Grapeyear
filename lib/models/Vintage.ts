@@ -29,6 +29,11 @@ const VintageSchema: Schema = new Schema({
         avgTemperature: Number,
         sunshineHours: Number,
         frostDays: Number,
+        heatSpikes: Number, // Days > 35°C
+        earlyFrostDays: Number, // Frost in first 60 days
+        lateFrostDays: Number, // Frost in last 30 days
+        harvestRainMm: Number, // Rain in last 30 days
+        droughtStressMaxDays: Number, // Max consecutive days < 1mm rain
     },
 
     quality: { type: String, enum: ['exceptional', 'excellent', 'good', 'average', 'challenging'] },
