@@ -86,7 +86,7 @@ export default async function Home() {
           sizes="100vw"
         />
         {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-black/40 z-10" />
+        <div className="absolute inset-0 bg-black/60 z-10" />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-transparent to-[#0a0a0a] z-10" />
 
@@ -108,13 +108,13 @@ export default async function Home() {
         </nav>
 
         <div className="relative z-20 container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-7xl font-playfair font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">
+          <h1 className="text-5xl md:text-7xl font-playfair font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-300 drop-shadow-sm">
             The Digital Terroir
           </h1>
-          <p className="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto mb-12 font-light">
+          <p className="text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto mb-12 font-light drop-shadow-md">
             Vintage intelligence driven by climate data.
             <br />
-            <span className="text-sm text-gray-500 mt-2 block">Objective data for collectors, investors, and enthusiasts.</span>
+            <span className="text-sm text-gray-300 mt-2 block font-normal">Objective data for collectors, investors, and enthusiasts.</span>
           </p>
 
           <SearchBar />
