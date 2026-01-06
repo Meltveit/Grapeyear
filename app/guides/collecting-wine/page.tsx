@@ -11,7 +11,7 @@ export default function CollectingWineGuide() {
         <main className="min-h-screen bg-[#0a0a0a] text-white pt-24 pb-20">
             <div className="container mx-auto px-4 max-w-4xl">
                 <div className="mb-8">
-                    <Link href="/" className="text-emerald-400 hover:text-emerald-300 text-sm mb-4 inline-block">&larr; Back to Home</Link>
+                    <Link href="/guides" className="text-emerald-400 hover:text-emerald-300 text-sm mb-4 inline-block">&larr; Back to Guides</Link>
                     <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-6">How to Start Collecting Wine</h1>
                     <p className="text-xl text-gray-300 font-light">
                         Building a cellar is about more than just buying bottles. It is about curating history, flavor, and future value.
