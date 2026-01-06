@@ -81,7 +81,7 @@ export default async function Home() {
           fill
           priority
           fetchPriority="high"
-          quality={85}
+          quality={60}
           className="object-cover"
           sizes="100vw"
         />
