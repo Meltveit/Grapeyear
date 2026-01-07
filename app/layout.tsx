@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import { Analytics } from "@vercel/analytics/react"
+import Footer from '@/components/Footer';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
@@ -84,6 +85,7 @@ export default function RootLayout({
         />
         {children}
         <Analytics />
+        <Footer />
       </body>
     </html>
   );
