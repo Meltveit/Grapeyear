@@ -130,6 +130,9 @@ export interface AdvancedVintageMetrics {
     // Legacy support (optional)
     heatSpikes?: number;
     harvestRainMm?: number;
+    earlyFrostDays?: number;
+    lateFrostDays?: number;
+    droughtStressMaxDays?: number;
 }
 
 export function generateVintageSummary(metrics: AdvancedVintageMetrics): string {
