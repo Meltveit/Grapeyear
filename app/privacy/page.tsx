@@ -50,7 +50,7 @@ export default function PrivacyPage() {
                     <section>
                         <h2 className="text-xl font-bold text-white mb-3">5. Contact Us</h2>
                         <p>
-                            If you have any questions about this Privacy Policy, please contact us at: admin@grapeyear.com
+                            If you have any questions about this Privacy Policy, please <a href="/contact" className="text-blue-400 hover:underline">contact us via our form</a>.
                         </p>
                     </section>
                 </div>

@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, Wine, Map, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Wine, Map, Settings, LogOut, Mail } from "lucide-react";
 
 export default async function AdminLayout({
     children,
@@ -29,6 +29,10 @@ export default async function AdminLayout({
                     <Link href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5 text-white hover:bg-white/10 transition-colors">
                         <LayoutDashboard size={20} />
                         Dashboard
+                    </Link>
+                    <Link href="/admin/messages" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-colors">
+                        <Mail size={20} />
+                        Inbox
                     </Link>
                     <div className="pt-4 pb-2 text-xs uppercase tracking-widest text-gray-500 font-bold">Content</div>
                     <Link href="/admin/countries" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-colors">
