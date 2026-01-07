@@ -10,20 +10,37 @@ export async function GET() {
         // Fetch all countries
         const countries = await Country.find({}).sort({ name: 1 });
 
-        // Aggregate winery counts by country name
-        // (Assuming Winery model uses the exact country name string as in Country model)
-        const wineryCounts = await import("@/lib/models/Winery").then(m => m.default.aggregate([
-            { $group: { _id: "$country", count: { $sum: 1 } } }
-        ]));
+        // 1. Fetch Regions to map RegionID -> CountryName
+        const regions = await Region.find({}).select('_id country').lean();
 
-        const countMap: Record<string, number> = {};
-        wineryCounts.forEach((c: any) => {
-            if (c._id) countMap[c._id] = c.count;
+        // Map: RegionID (string) -> CountryName (string)
+        const regionToCountryMap: Record<string, string> = {};
+        regions.forEach((r: any) => {
+            regionToCountryMap[r._id.toString()] = r.country;
         });
 
+        // 2. Aggregate winery counts by REGION
+        const wineryCountsByRegion = await import("@/lib/models/Winery").then(m => m.default.aggregate([
+            { $group: { _id: "$region", count: { $sum: 1 } } }
+        ]));
+
+        // 3. Sum up counts per Country
+        const countryCountMap: Record<string, number> = {};
+
+        wineryCountsByRegion.forEach((group: any) => {
+            const regionId = group._id?.toString();
+            if (regionId && regionToCountryMap[regionId]) {
+                const countryName = regionToCountryMap[regionId];
+                countryCountMap[countryName] = (countryCountMap[countryName] || 0) + group.count;
+            }
+            // Fallback: If winery document HAS a direct country string, use it (if we want hybrid approach)
+            // But strict region relationship is safer for now.
+        });
+
+        // 4. Map back to Country list
         const countriesWithCounts = countries.map((country) => ({
             ...country.toObject(),
-            wineryCount: countMap[country.name] || 0
+            wineryCount: countryCountMap[country.name] || 0
         }));
 
         return NextResponse.json(countriesWithCounts);
