@@ -30,9 +30,10 @@ export default function Footer() {
                 <div>
                     <h3 className="font-bold text-white mb-4 uppercase tracking-wider text-xs">Explore</h3>
                     <ul className="space-y-3 text-gray-400">
-                        <li><Link href="/vineyards" className="hover:text-amber-400 transition-colors">Vineyards</Link></li>
-                        <li><Link href="/vintages/france/bordeaux/2020" className="hover:text-amber-400 transition-colors">Vintage Reports</Link></li>
-                        <li><Link href="/guides" className="hover:text-amber-400 transition-colors">Guides</Link></li>
+                        <li><Link href="/vineyards" className="text-gray-400 hover:text-white transition-colors">Vineyards</Link></li>
+                        <li><Link href="/compare" className="text-gray-400 hover:text-white transition-colors">Compare Vintages</Link></li>
+                        <li><Link href="/vintages/france/bordeaux/2020" className="text-gray-400 hover:text-white transition-colors">Vintage Reports</Link></li>
+                        <li><Link href="/guides" className="text-gray-400 hover:text-white transition-colors">Guides</Link></li>
                     </ul>
                 </div>
 

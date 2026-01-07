@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
             const vintage = await Vintage.findOne({
                 regionId: regionDoc._id,
                 year: parseInt(year)
-            }).select('grapeyearScore quality aiSummary').lean();
+            }).select('grapeyearScore quality vintageSummary aiSummary gdd rainfall diurnalShiftAvg avgTemperature sunshineHours frostDays metrics').lean();
 
             if (vintage) {
                 titleDetail = ` - Score: ${vintage.grapeyearScore}`;
@@ -183,18 +183,20 @@ export default async function VintagePage({ params }: PageParams) {
         };
     });
 
-    // Default values if vintage is missing
-    const metrics = vintage?.metrics || {} as any;
-    const gdd = metrics.growingDegreeDays ?? 0;
-    const rainfall = metrics.totalRainfallMm ?? 0;
-    const diurnal = metrics.diurnalShiftAvg ?? 0;
-    const avgTemp = metrics.avgTemperature ?? 0;
-    const metricsSunshineHours = metrics.sunshineHours ?? 0;
-    const metricsFrostDays = metrics.frostDays ?? 0;
+    // Default values if vintage is missing (Handle Flat vs Nested legacy)
+    // The new schema uses top-level fields (gdd, rainfall). Old data uses metrics object.
+    const metrics: any = vintage?.metrics || {};
+
+    const gdd = vintage?.gdd ?? metrics.growingDegreeDays ?? 0;
+    const rainfall = vintage?.rainfall ?? metrics.totalRainfallMm ?? 0;
+    const diurnal = vintage?.diurnalShiftAvg ?? metrics.diurnalShiftAvg ?? 0;
+    const avgTemp = vintage?.avgTemperature ?? metrics.avgTemperature ?? 0;
+    const metricsSunshineHours = vintage?.sunshineHours ?? metrics.sunshineHours ?? 0;
+    const metricsFrostDays = vintage?.frostDays ?? metrics.frostDays ?? 0;
 
     const score = vintage?.grapeyearScore ?? 0;
     const quality = vintage?.quality ?? 'Data Pending';
-    const summary = vintage?.aiSummary ?? 'Historical climate data for this vintage is currently being ingested.';
+    const summary = vintage?.vintageSummary || vintage?.aiSummary || 'Historical climate data for this vintage is currently being ingested.';
     const description = region.description || 'No description available.';
 
     // Re-calculate local image for Schema
@@ -293,9 +295,11 @@ export default async function VintagePage({ params }: PageParams) {
                                 <h3 className="text-xl font-playfair font-bold text-white mb-4">
                                     {region.name} {yearInt} Vintage Report
                                 </h3>
-                                <p className="text-gray-300 font-serif text-lg leading-relaxed">
-                                    {summary}
-                                </p>
+                                <div className="text-gray-300 font-serif text-lg leading-relaxed space-y-4">
+                                    {summary.split('\n\n').map((paragraph: string, i: number) => (
+                                        <p key={i}>{paragraph}</p>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
