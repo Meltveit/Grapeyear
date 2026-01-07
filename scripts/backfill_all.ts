@@ -7,7 +7,7 @@ import Vintage from '../lib/models/Vintage';
 import { ingestRegionHistory } from '../lib/ingestOpenMeteo';
 
 const START_YEAR = 1960;
-const END_YEAR = 2024;
+const END_YEAR = 2025;
 
 async function connectDirectly() {
     if (!process.env.MONGODB_URI) throw new Error("Missing MONGODB_URI");
@@ -28,6 +28,20 @@ async function run() {
 
     for (const region of regions) {
         console.log(`\n--- Processing Region: ${region.name} ---`);
+
+        // Smart Skip: Check if we have all data
+        const expectedCount = END_YEAR - START_YEAR + 1;
+        const currentCount = await Vintage.countDocuments({
+            regionId: (region as any)._id,
+            year: { $gte: START_YEAR, $lte: END_YEAR },
+            uniqueComposite: { $exists: true }
+        });
+
+        if (currentCount >= expectedCount) {
+            console.log(`Skipping ${region.name} (Complete: ${currentCount}/${expectedCount})`);
+            continue;
+        }
+
         try {
             // One call to rule them all
             await ingestRegionHistory((region as any)._id.toString(), START_YEAR, END_YEAR);
@@ -36,7 +50,7 @@ async function run() {
             console.error(`\nFailed Region ${region.name}: ${e.message}`);
         }
         // Delay between regions to be safe (60 seconds)
-        await delay(60000);
+        await delay(120000);
     }
 
     console.log("\n\nBackfill Complete!");
