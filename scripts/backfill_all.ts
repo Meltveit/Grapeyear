@@ -37,10 +37,13 @@ async function run() {
             uniqueComposite: { $exists: true }
         });
 
+        // FORCE OVERWRITE: We need to repair the schema mismatch (score vs grapeyearScore, missing summary)
+        /*
         if (currentCount >= expectedCount) {
             console.log(`Skipping ${region.name} (Complete: ${currentCount}/${expectedCount})`);
             continue;
         }
+        */
 
         try {
             // One call to rule them all

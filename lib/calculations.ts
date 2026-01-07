@@ -41,7 +41,7 @@ export function calculateGrapeyearScore(metrics: {
     diurnal: number;
     sunshineHours?: number;
     frostDays?: number;
-}): { score: number; quality: string } {
+}): { score: number; quality: 'exceptional' | 'excellent' | 'good' | 'average' | 'challenging' | 'legendary' } {
     const { gdd, rainfall, diurnal, sunshineHours = 1500, frostDays = 0 } = metrics;
 
     let score = 50;
@@ -100,7 +100,7 @@ export function calculateGrapeyearScore(metrics: {
     score = Math.min(100, Math.max(0, Math.round(score)));
 
     // Quality label
-    let quality = 'average';
+    let quality: 'exceptional' | 'excellent' | 'good' | 'average' | 'challenging' | 'legendary' = 'average';
     if (score >= 93) quality = 'legendary';
     else if (score >= 88) quality = 'exceptional';
     else if (score >= 80) quality = 'excellent';

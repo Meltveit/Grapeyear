@@ -20,7 +20,7 @@ export interface IVintage extends Document {
         sunshineHours: number;
         frostDays: number;
     };
-    quality?: 'exceptional' | 'excellent' | 'good' | 'average' | 'challenging';
+    quality?: 'exceptional' | 'excellent' | 'good' | 'average' | 'challenging' | 'legendary';
     vintageSummary?: string;
     aiSummary?: string; // Legacy
 
@@ -51,7 +51,7 @@ const VintageSchema: Schema = new Schema({
         type: Number,
         required: true,
     },
-    score: {
+    grapeyearScore: {
         type: Number,
         min: 0,
         max: 100,
@@ -89,8 +89,9 @@ const VintageSchema: Schema = new Schema({
         }
     },
 
-    quality: { type: String, enum: ['exceptional', 'excellent', 'good', 'average', 'challenging'] },
-    aiSummary: String,
+    quality: { type: String, enum: ['exceptional', 'excellent', 'good', 'average', 'challenging', 'legendary'] },
+    vintageSummary: String, // New Field
+    aiSummary: String, // Legacy
 
     // uniqueComposite is useful if we want to enforce unique region+year at the application level easily, 
     // though a compound index is better.

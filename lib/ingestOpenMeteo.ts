@@ -1,6 +1,6 @@
 import Vintage from "@/lib/models/Vintage";
 import Region from "@/lib/models/Region";
-import { generateVintageSummary } from "@/lib/calculations";
+import { generateVintageSummary, calculateGrapeyearScore } from "@/lib/calculations";
 
 // Types for Open-Meteo response
 interface DailyWeather {
@@ -91,6 +91,16 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
         };
 
         const metrics = calculateMetrics(dailySubset, isNorthern, year);
+
+        // Calculate Score & Quality (using shared logic)
+        const { score, quality } = calculateGrapeyearScore({
+            gdd: metrics.growingSeason.gdd,
+            rainfall: metrics.growingSeason.rainfall,
+            diurnal: metrics.growingSeason.diurnalRange,
+            sunshineHours: 1500, // Placeholder
+            frostDays: metrics.growingSeason.frostEvents
+        });
+
         const summary = generateVintageSummary({
             gdd: metrics.growingSeason.gdd,
             rainfall: metrics.growingSeason.rainfall,
@@ -98,7 +108,9 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
             frostDays: metrics.growingSeason.frostEvents,
             regionName: region.name,
             year: year,
-            storyMetrics: metrics.story
+            storyMetrics: metrics.story,
+            heatSpikes: metrics.growingSeason.heatSpikes,
+            harvestRainMm: metrics.story.harvest.rainMm
         });
 
         // Add to Bulk Op
@@ -108,13 +120,14 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
                 update: {
                     $set: {
                         year,
-                        score: calculateScore(metrics),
+                        grapeyearScore: score, // Correct Field
+                        quality: quality,      // Correct Field
                         gdd: metrics.growingSeason.gdd,
                         rainfall: metrics.growingSeason.rainfall,
                         avgTemperature: metrics.growingSeason.avgTemp,
                         diurnalShiftAvg: metrics.growingSeason.diurnalRange,
                         storyMetrics: metrics.story,
-                        vintageSummary: summary,
+                        vintageSummary: summary, // Correct Field
                         uniqueComposite: `${region._id}_${year}`
                     }
                 },
@@ -126,7 +139,7 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
     // Execute Bulk Write
     if (bulkOps.length > 0) {
         await Vintage.bulkWrite(bulkOps);
-        console.log(`Saved ${bulkOps.length} vintages for ${region.name}`);
+        console.log(`Saved ${bulkOps.length} vintages for ${region.name} (Repair Mode)`);
     }
 }
 
@@ -219,6 +232,7 @@ function calculateMetrics(daily: DailyWeather, isNorthern: boolean, year: number
     let flowStatus: 'Excellent' | 'Good' | 'Average' | 'Poor' = 'Average';
     if (floweringRain < 20 && flowAvgTemp > 18) flowStatus = 'Excellent';
     else if (floweringRain > 80 || flowAvgTemp < 15) flowStatus = 'Poor';
+    else if (floweringRain >= 20 && floweringRain <= 80) flowStatus = 'Good';
 
     // Harvest Conditions
     let harvCond: 'Dry' | 'Wet' | 'Mixed' = 'Dry';
@@ -253,16 +267,4 @@ function calculateMetrics(daily: DailyWeather, isNorthern: boolean, year: number
             }
         }
     };
-}
-
-function calculateScore(metrics: any) {
-    // Placeholder 1-100 score logic
-    let score = 80;
-    // Penalize rain at harvest
-    if (metrics.story.harvest.rainMm > 50) score -= 10;
-    // Penalize frost
-    score -= (metrics.growingSeason.frostEvents * 2);
-    // Reward heat (to a point)
-    if (metrics.growingSeason.gdd > 1200) score += 5;
-    return Math.max(0, Math.min(100, score));
 }
