@@ -14,7 +14,7 @@ export async function GET(
         const regions = await Region.find({ countryId: id }).sort({ name: 1 });
 
         // Aggregate winery counts per region
-        const regionIds = regions.map(r => r._id);
+        const regionIds = regions.map(r => r._id.toString()); // Convert to String since Winery.region is String
         const wineryCounts = await import("@/lib/models/Winery").then(m => m.default.aggregate([
             { $match: { region: { $in: regionIds } } },
             { $group: { _id: "$region", count: { $sum: 1 } } }
