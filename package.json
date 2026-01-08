@@ -17,6 +17,7 @@
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
+    "duck-duck-scrape": "^2.2.7",
     "framer-motion": "^12.23.26",
     "lodash": "^4.17.21",
     "lucide-react": "^0.562.0",
