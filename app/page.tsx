@@ -100,9 +100,9 @@ export default async function Home() {
               <Link href="/vineyards" className="px-6 py-2 md:px-8 md:py-2.5 rounded-full hover:bg-white/20 transition-all text-sm font-medium tracking-wide whitespace-nowrap">
                 Explore Vineyards
               </Link>
-              <Link href="/travel-to" className="px-6 py-2 md:px-8 md:py-2.5 rounded-full hover:bg-white/20 transition-all text-sm font-medium tracking-wide whitespace-nowrap text-amber-300">
-                Plan a Trip ✈️
-              </Link>
+              <div className="px-6 py-2 md:px-8 md:py-2.5 rounded-full bg-white/5 text-gray-400 cursor-not-allowed text-sm font-medium tracking-wide whitespace-nowrap border border-white/5">
+                Travel Guide (Coming Soon) ✈️
+              </div>
             </div>
           </div>
 

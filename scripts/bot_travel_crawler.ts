@@ -63,8 +63,10 @@ async function run() {
                 added++;
             }
 
-            // Polite delay
-            await new Promise(r => setTimeout(r, 3000));
+            // Polite delay (Longer to avoid 429)
+            const delay = Math.floor(Math.random() * 10000) + 15000; // 15-25 seconds
+            console.log(`   ⏳ Waiting ${Math.round(delay / 1000)}s...`);
+            await new Promise(r => setTimeout(r, delay));
 
         } catch (err: any) {
             console.error(`   ❌ Scraping error for ${region.name}:`, err.message);
