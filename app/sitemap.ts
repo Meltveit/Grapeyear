@@ -5,7 +5,7 @@ import Winery from '@/lib/models/Winery';
 import Vintage from '@/lib/models/Vintage';
 import { TOP_REGIONS } from '@/lib/constants';
 
-const BASE_URL = 'https://www.grapeyear.com';
+const BASE_URL = 'https://grapeyear.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const routes: MetadataRoute.Sitemap = [];
