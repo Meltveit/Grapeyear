@@ -92,25 +92,21 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
         const metrics = calculateMetrics(dailySubset, isNorthern, year);
 
         // Calculate Score & Quality (using shared logic)
-        const { score, quality } = calculateGrapeyearScore({
+        // Calculate Score & Quality (using Scientific Phase Model)
+        // Match AdvancedVintageMetrics interface
+        const advancedMetrics = {
             gdd: metrics.growingSeason.gdd,
             rainfall: metrics.growingSeason.rainfall,
-            diurnal: metrics.growingSeason.diurnalRange,
-            sunshineHours: 1500, // Placeholder
-            frostDays: metrics.growingSeason.frostEvents
-        });
-
-        const summary = generateVintageSummary({
-            gdd: metrics.growingSeason.gdd,
-            rainfall: metrics.growingSeason.rainfall,
-            sunshineHours: 1500,
+            sunshineHours: metrics.growingSeason.sunshineHours || 1800, // Default if 0
             frostDays: metrics.growingSeason.frostEvents,
             regionName: region.name,
             year: year,
-            storyMetrics: metrics.story,
-            heatSpikes: metrics.growingSeason.heatSpikes,
-            harvestRainMm: metrics.story.harvest.rainMm
-        });
+            storyMetrics: metrics.story
+        };
+
+        const { score, quality } = calculateGrapeyearScore(advancedMetrics);
+
+        const summary = generateVintageSummary(advancedMetrics);
 
         // Add to Bulk Op
         bulkOps.push({
@@ -125,6 +121,7 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
                         rainfall: metrics.growingSeason.rainfall,
                         avgTemperature: metrics.growingSeason.avgTemp,
                         diurnalShiftAvg: metrics.growingSeason.diurnalRange,
+                        sunshineHours: advancedMetrics.sunshineHours,
                         storyMetrics: metrics.story,
                         vintageSummary: summary, // Correct Field
                         uniqueComposite: `${region._id}_${year}`

@@ -47,74 +47,76 @@ export function calculateGrapeyearScore(metrics: AdvancedVintageMetrics): { scor
     const harvest = storyMetrics?.harvest || { conditions: 'Mixed', rainMm: 40, heatwaveDays: 0 };
     const season = storyMetrics?.growingSeason || { heatSpikes: 0, frostEvents: frostDays, diurnalRange: 10, droughtStress: false };
 
-    // --- PHASE 1: THE FOUNDATION (Spring & Flowering) ---
-    // Start with Base 50
-    let score = 50;
+    // --- PHASE 1: THE START (Flowering) ---
+    // Start with Base 60 (Higher baseline)
+    let score = 60;
 
-    // Flowering Quality (Set the potential yield/uniformity)
-    // Rain < 20mm and Temp > 18C is ideal.
-    // Rain > 70mm or Temp < 15C causes Coulure (Penalty).
-    if (flowering.rainMm < 25 && flowering.avgTemp > 18) {
-        score += 10; // Perfect Set
-    } else if (flowering.rainMm > 80 || flowering.avgTemp < 14) {
-        score -= 10; // Poor Set (Coulure)
-    } else if (flowering.rainMm > 50) {
+    // Flowering: Rain affects YIELD more than QUALITY.
+    // Heavy rain causes Coulure (lower yield), but surviving grapes can be amazing (2022).
+    // So distinct from Rot.
+    // Bonus for perfect flowering (Ease of farming): +5
+    // Penalty for bad flowering: -3 (Small penalty/nuance).
+    if (flowering.rainMm < 30 && flowering.avgTemp > 18) {
+        score += 5;
+    } else if (flowering.rainMm > 100) {
         score -= 5;
     }
 
-    // Spring Frost Penalty (User Requested: -2 pts per day)
-    // Cap at -15 to prevent total destruction from one bad week if the rest of year is good.
-    const effectiveFrost = Math.min(15, season.frostEvents * 2);
+    // Spring Frost: Also affects Yield > Quality.
+    // Small penalty for impact on vine balance.
+    // Cap at -5.
+    const effectiveFrost = Math.min(5, season.frostEvents);
     score -= effectiveFrost;
 
 
-    // --- PHASE 2: RIPENING (The Engine) ---
+    // --- PHASE 2: RIPENING (The Core Quality Driver) ---
     // GDD (Heat Sum)
-    if (gdd > 1600) score += 20; // Powerful
+    // 2022 was > 2100. Modern vintages are hotter.
+    // We need to reward Heat broadly, but penalize extreme scorching without water?
+    // Actually, great vintages are usually hot.
+    if (gdd > 1800) score += 25; // Massive structure
+    else if (gdd > 1600) score += 20; // Powerful
     else if (gdd > 1400) score += 15; // Ripe
     else if (gdd > 1250) score += 5; // Balanced
     else if (gdd < 1000) score -= 15; // Unripe
     else if (gdd < 1150) score -= 5;
 
-    // Heat Spikes (>35C)
-    // A few days are manageable, but > 10 is stress (blocked ripening).
-    if (season.heatSpikes > 10) score -= 5;
+    // Heat Spikes (>35C) - Only penalize if excessive (>15 days)
+    if (season.heatSpikes > 15) score -= 5;
 
-    // Diurnal Shift (Acidity / Complexity)
-    if (season.diurnalRange > 13) score += 10;
-    else if (season.diurnalRange > 10) score += 5;
-    else if (season.diurnalRange < 7) score -= 5; // Flabby
+    // Diurnal Shift (Freshness)
+    if (season.diurnalRange > 13) score += 5;
 
-    // Sunshine Bonus (If data exists)
-    // Pre-2005 fallback is usually handled by ingestion/defaults, but check range.
+    // Sunshine Bonus (Photosynthesis)
     if (sunshineHours > 2200) score += 5;
 
 
-    // --- PHASE 3: HARVEST (The Verdict) ---
-    // Rain at harvest is the biggest vintage killer (Rot/Dilution).
-    // < 15mm: Dry/Perfect (+15)
-    // 15-40mm: Manageable (+5)
-    // 40-80mm: Risky (-10)
-    // > 80mm: Bad (-20)
-    if (harvest.rainMm < 15) score += 15;
-    else if (harvest.rainMm < 40) score += 5;
-    else if (harvest.rainMm > 100) score -= 20;
-    else if (harvest.rainMm > 60) score -= 10;
+    // --- PHASE 3: HARVEST (The Risk) ---
+    // Rain at harvest = Dilution/Rot (Quality Killer).
+    // This is the most important penalty.
+    // < 20mm: Dry/Perfect (+10)
+    // > 80mm: Bad (-15)
+    // > 120mm: Disaster (-25)
+    if (harvest.rainMm < 20) score += 10;
+    else if (harvest.rainMm > 120) score -= 25;
+    else if (harvest.rainMm > 80) score -= 15;
+    else if (harvest.rainMm > 50) score -= 5;
 
     // Harvest Heatwaves (Stewed fruit risk)
-    if (harvest.heatwaveDays > 3) score -= 5;
+    if (harvest.heatwaveDays > 5) score -= 3;
 
 
     // --- NORMALIZE & GRADE ---
     score = Math.min(100, Math.max(0, Math.round(score)));
 
+    // Adjust Thresholds for "Commercial" feel (Parkerization)
     let quality: 'exceptional' | 'excellent' | 'good' | 'average' | 'challenging' | 'legendary' = 'average';
-    if (score >= 96) quality = 'legendary';       // 96+ (Rare perfection)
-    else if (score >= 90) quality = 'exceptional'; // 90-95 (Outstanding)
-    else if (score >= 80) quality = 'excellent';   // 80-89 (Great)
-    else if (score >= 70) quality = 'good';        // 70-79 (Solid)
-    else if (score >= 50) quality = 'average';     // 50-69 (Drinkable)
-    else quality = 'challenging';                  // < 50 (Difficult)
+    if (score >= 95) quality = 'legendary';
+    else if (score >= 90) quality = 'exceptional';
+    else if (score >= 82) quality = 'excellent';   // Broaden Excellent range
+    else if (score >= 75) quality = 'good';
+    else if (score >= 60) quality = 'average';
+    else quality = 'challenging';
 
     return { score, quality };
 }
