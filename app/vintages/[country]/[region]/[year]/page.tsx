@@ -246,8 +246,8 @@ export default async function VintagePage({ params }: PageParams) {
                 <Breadcrumbs
                     items={[
                         { label: 'Vineyards', href: '/vineyards' },
-                        { label: region.country, href: `/vineyards/${country.toLowerCase()}` },
-                        { label: region.name, href: `/vineyards/${country.toLowerCase()}/${regionSlug}` },
+                        { label: region.country, href: `/vineyards/${region.country.toLowerCase().replace(/ /g, '-')}` },
+                        { label: region.name, href: `/vineyards/${region.country.toLowerCase().replace(/ /g, '-')}/${regionSlug}` },
                         { label: `${yearInt} Vintage` }
                     ]}
                 />
@@ -259,7 +259,7 @@ export default async function VintagePage({ params }: PageParams) {
                         </h1>
                         <div className="flex items-center gap-4 text-4xl font-light text-gray-400">
                             <Link
-                                href={`/vintages/${country}/${regionSlug}/${yearInt - 1}`}
+                                href={`/vintages/${region.country.toLowerCase().replace(/ /g, '-')}/${regionSlug}/${yearInt - 1}`}
                                 className="p-2 hover:text-white transition-colors"
                                 aria-label="Previous Year"
                             >
@@ -268,7 +268,7 @@ export default async function VintagePage({ params }: PageParams) {
                             <span>{yearInt}</span>
                             {/* Allow next year navigation freely or limit logic if desired */}
                             <Link
-                                href={`/vintages/${country}/${regionSlug}/${yearInt + 1}`}
+                                href={`/vintages/${region.country.toLowerCase().replace(/ /g, '-')}/${regionSlug}/${yearInt + 1}`}
                                 className="p-2 hover:text-white transition-colors"
                                 aria-label="Next Year"
                             >
@@ -353,7 +353,7 @@ export default async function VintagePage({ params }: PageParams) {
                             </p>
                         </div>
                         <Link
-                            href={`/vineyards/${country}/${regionSlug}`}
+                            href={`/vineyards/${region.country.toLowerCase().replace(/ /g, '-')}/${regionSlug}`}
                             className="text-purple-400 hover:text-purple-300 transition-colors flex items-center mt-4 md:mt-0"
                         >
                             Explore all vineyards <ChevronRight className="w-4 h-4 ml-1" />
@@ -370,7 +370,7 @@ export default async function VintagePage({ params }: PageParams) {
                                 {/* Background Image */}
                                 <div className="absolute inset-0">
                                     <img
-                                        src={winery.image || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=800'}
+                                        src={winery.imageUrl || winery.image || 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=800'}
                                         alt={winery.name}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
