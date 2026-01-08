@@ -90,16 +90,28 @@ async function seed() {
                 // Count frost days (min temp < 0)
                 const frostDays = processedDaily.filter((d: any) => d.minTemp < 0).length;
 
-                const { score, quality } = calculateGrapeyearScore({ gdd, rainfall: totalRain, diurnal, sunshineHours, frostDays });
-
-                const aiSummary = generateVintageSummary({
+                // Match AdvancedVintageMetrics interface
+                const advancedMetrics = {
                     gdd,
                     rainfall: totalRain,
                     sunshineHours,
                     frostDays,
                     regionName: region.name,
-                    year
-                });
+                    year,
+                    storyMetrics: {
+                        flowering: { status: 'Average', rainMm: 30, avgTemp: 18 }, // Dummy defaults
+                        harvest: { conditions: 'Mixed', rainMm: 30, heatwaveDays: 0 }, // Dummy defaults
+                        growingSeason: {
+                            heatSpikes: 0,
+                            frostDays,
+                            diurnalRange: diurnal,
+                            droughtStress: false
+                        }
+                    }
+                };
+
+                const { score, quality } = calculateGrapeyearScore(advancedMetrics as any);
+                const aiSummary = generateVintageSummary(advancedMetrics as any);
 
                 await Vintage.findOneAndUpdate(
                     { regionId: region._id, year },
