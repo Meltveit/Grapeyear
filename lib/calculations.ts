@@ -44,68 +44,44 @@ export function calculateGrapeyearScore(metrics: {
 }): { score: number; quality: 'exceptional' | 'excellent' | 'good' | 'average' | 'challenging' | 'legendary' } {
     const { gdd, rainfall, diurnal, sunshineHours = 1500, frostDays = 0 } = metrics;
 
-    let score = 50;
+    // Start with a decent baseline (70 = Good/Average)
+    let score = 70;
 
-    // 1. GDD Scoring (Continuous Bell Curve approach simplifed)
-    // Optimal: 1300-1600. 
-    // Below 1000 is very difficult. Above 2000 is very hot.
-    if (gdd >= 1300 && gdd <= 1600) {
-        score += 25;
-    } else if (gdd < 1300) {
-        // Penalty for being cold. e.g. 1000 GDD -> -10 pts from max bonus
-        const deficit = 1300 - gdd;
-        score += Math.max(0, 25 - (deficit * 0.1));
-    } else {
-        // Penalty for being too hot 
-        const excess = gdd - 1600;
-        score += Math.max(0, 25 - (excess * 0.08));
-    }
+    // 1. Growing Degree Days (Heat) - The Engine
+    if (gdd > 1600) score += 15;      // Hot/Powerful
+    else if (gdd > 1400) score += 10; // Warm/Ripe
+    else if (gdd < 1000) score -= 15; // Too Cool/Unripe
+    else if (gdd < 1200) score -= 5;  // Cool
 
-    // 2. Rainfall (Growing Season, approx 6-7 months)
-    // Optimal: 300-500mm.
-    // > 800mm is rot risk. < 200mm is drought.
-    if (rainfall >= 300 && rainfall <= 500) {
-        score += 20;
-    } else if (rainfall < 300) {
-        const drought = 300 - rainfall;
-        score += Math.max(0, 20 - (drought * 0.1));
-    } else { // > 500
-        const wet = rainfall - 500;
-        score += Math.max(0, 20 - (wet * 0.05));
-    }
+    // 2. Rainfall - Key Risk Factor
+    // 600-800mm is often ideal for dry farming. > 800 can be disease pressure.
+    if (rainfall > 1200) score -= 20;      // Very Wet (Dilution/Rot)
+    else if (rainfall > 900) score -= 10;  // Wet
+    else if (rainfall < 300) score -= 10;  // Drought Stress
+    else if (rainfall < 500) score -= 5;   // Dry
 
-    // 3. Sunshine (More is generally better up to a point)
-    // 1600+ is great. 2200+ is intense.
-    if (sunshineHours > 1600) {
-        score += 10;
-        // Bonue for specific high sun
-        score += Math.min(5, (sunshineHours - 1600) * 0.01);
-    } else {
-        // Less sun
-        score += Math.max(0, (sunshineHours - 1000) * 0.01);
-    }
+    // 3. Diurnal Shift - The Acid/Aroma Preserver
+    if (diurnal > 15) score += 5; // Excellent
+    else if (diurnal < 6) score -= 5; // Flat/Flabby risk
 
-    // 4. Diurnal (Crucial for acidity)
-    // > 12 is good. > 15 is excellent.
-    if (diurnal > 12) {
-        score += Math.min(15, (diurnal - 10) * 2);
-    }
+    // 4. Frost - The Killer (Capped penalty)
+    // Frost kills yield, but survivors often concentrate. Don't destroy score solely on frost.
+    const frostPenalty = Math.min(20, frostDays * 2);
+    score -= frostPenalty;
 
-    // 5. Frost Penalty (Severe)
-    if (frostDays > 1) {
-        score -= (frostDays * 5); // -5 points per frost day
-    }
+    // 5. Sunshine Bonus
+    if (sunshineHours > 2200) score += 5;
 
-    // Cap score 0-100
+    // Normalize
     score = Math.min(100, Math.max(0, Math.round(score)));
 
-    // Quality label
+    // Quality label logic remains...
     let quality: 'exceptional' | 'excellent' | 'good' | 'average' | 'challenging' | 'legendary' = 'average';
-    if (score >= 93) quality = 'legendary';
-    else if (score >= 88) quality = 'exceptional';
+    if (score >= 95) quality = 'legendary';
+    else if (score >= 90) quality = 'exceptional';
     else if (score >= 80) quality = 'excellent';
     else if (score >= 70) quality = 'good';
-    else if (score >= 50) quality = 'average';
+    else if (score >= 60) quality = 'average';
     else quality = 'challenging';
 
     return { score, quality };

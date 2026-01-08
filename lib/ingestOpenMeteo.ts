@@ -196,24 +196,57 @@ function calculateMetrics(daily: DailyWeather, isNorthern: boolean, year: number
     let harvestRain = 0;
     let harvestHeat = 0;
 
+
+    // Growing Season Definition
+    // Northern: Apr 1 (Day 90) - Oct 31 (Day 304)
+    // Southern: Oct 1 (Day 273) - Apr 30 (Day 120 next year - wrapped)
+    // Actually, simply define start/end months (0-indexed)
+
+    // We already sliced the data to define "The Year".
+    // Northern: Jan-Dec. Season: Apr-Oct.
+    // Southern: Jul-Jun. Season: Oct-Apr.
+
+    // Let's use month check.
+
     daily.time.forEach((t, i) => {
+        const date = new Date(t);
+        const month = date.getMonth(); // 0-11
+
+        // Check if in Growing Season
+        let inSeason = false;
+        if (isNorthern) {
+            // Apr (3) to Oct (9)
+            if (month >= 3 && month <= 9) inSeason = true;
+        } else {
+            // Oct (9) to Apr (3)
+            // Since data runs Jul-Jun, this handles the wrapping naturally?
+            // Yes, Jul-Jun data. 
+            // Oct, Nov, Dec (9,10,11) -> Yes
+            // Jan, Feb, Mar, Apr (0,1,2,3) -> Yes
+            // May, Jun, Jul, Aug, Sep (4,5,6,7,8) -> No
+            if (month >= 9 || month <= 3) inSeason = true;
+        }
+
         const max = daily.temperature_2m_max[i];
         const min = daily.temperature_2m_min[i];
         const rain = daily.precipitation_sum[i];
         const mean = (max + min) / 2;
 
-        // Growing Season Stats
-        if (mean > 10) {
-            gdd += (mean - 10);
+        // Growing Season Stats ONLY
+        if (inSeason) {
+            if (mean > 10) {
+                gdd += (mean - 10);
+            }
+            totalRain += rain;
+            tempSum += mean;
+            if (max > 35) heatSpikes++;
+            // Frost only matters in Spring/Autumn really, but counting all season is better than winter
+            if (min < 0) frostEvents++;
+            diurnalSum += (max - min);
+            count++;
         }
-        totalRain += rain;
-        tempSum += mean;
-        if (max > 35) heatSpikes++;
-        if (min < 0) frostEvents++; // Should restrict to Spring for "Frost Risk"
-        diurnalSum += (max - min);
-        count++;
 
-        // Flowering Phase
+        // Flowering Phase (Keep logic, but ensure it aligns)
         if (i >= floweringStart && i <= floweringEnd) {
             floweringRain += rain;
             floweringTempSum += mean;
