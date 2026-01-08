@@ -46,7 +46,7 @@ async function run() {
     // 3. Ask Gemini for Candidates
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({
-        model: "gemini-2.0-flash-exp",
+        model: "gemini-2.5-pro",
         generationConfig: { responseMimeType: "application/json" }
     });
 
