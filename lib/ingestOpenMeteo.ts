@@ -30,6 +30,19 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
         let chunkEnd = chunkStart + chunkSize - 1;
         if (chunkEnd > endYear) chunkEnd = endYear;
 
+        // SMART SKIP: Check if we already have this data
+        const existingCount = await Vintage.countDocuments({
+            regionId,
+            year: { $gte: chunkStart, $lte: chunkEnd },
+            storyMetrics: { $exists: true }
+        });
+        const expectedCount = chunkEnd - chunkStart + 1;
+
+        if (existingCount >= expectedCount) {
+            console.log(`   > Chunk ${chunkStart}-${chunkEnd} fully saved (${existingCount}/${expectedCount}). Skipping API call. ⚡`);
+            continue;
+        }
+
         const startDate = `${chunkStart}-01-01`;
         const endDate = `${chunkEnd}-12-31`;
 
