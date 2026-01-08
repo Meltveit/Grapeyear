@@ -27,30 +27,32 @@ async function run() {
     console.log(`Found ${regions.length} regions.`);
 
     for (const region of regions) {
-        console.log(`\n--- Processing Region: ${region.name} ---`);
 
-        // Smart Skip: Check if we have all data
-        const expectedCount = END_YEAR - START_YEAR + 1;
-        const currentCount = await Vintage.countDocuments({
-            regionId: (region as any)._id,
-            year: { $gte: START_YEAR, $lte: END_YEAR },
-            uniqueComposite: { $exists: true }
-        });
+        // --- IDEMPOTENCY CHECK ---
+        // Check if we already processed this today (Check 2024 vintage)
+        const lastVintage = await Vintage.findOne({ regionId: (region as any)._id, year: 2024 });
+        if (lastVintage) {
+            const oneDayAgo = new Date();
+            oneDayAgo.setDate(oneDayAgo.getDate() - 1);
 
-        // FORCE OVERWRITE: We need to repair the schema mismatch (score vs grapeyearScore, missing summary)
-        /*
-        if (currentCount >= expectedCount) {
-            console.log(`Skipping ${region.name} (Complete: ${currentCount}/${expectedCount})`);
-            continue;
+            // If updated recently AND has the new Story Metrics/Score
+            if (new Date((lastVintage as any).updatedAt) > oneDayAgo && (lastVintage as any).storyMetrics) {
+                console.log(`Skipping ${region.name} (Already updated recently)`);
+                continue;
+            }
         }
-        */
 
+        console.log(`\n--- Processing Region: ${region.name} ---`);
         try {
             // One call to rule them all
             await ingestRegionHistory((region as any)._id.toString(), START_YEAR, END_YEAR);
             process.stdout.write('✓');
         } catch (e: any) {
             console.error(`\nFailed Region ${region.name}: ${e.message}`);
+            if (e.message.includes("Too Many Requests") || e.message.includes("429")) {
+                console.log("Rate Limit Hit. Stopping Script.");
+                break;
+            }
         }
         // Delay between regions to be safe (60 seconds)
         await delay(600000);
