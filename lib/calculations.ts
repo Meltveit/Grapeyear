@@ -69,17 +69,21 @@ export function calculateGrapeyearScore(metrics: AdvancedVintageMetrics): { scor
     score -= effectiveFrost;
 
 
+    // --- PHASE 1.5: STRUCTURE & CONCENTRATION (Annual Context) ---
+    // Low rainfall (< 600mm) often leads to high concentration and intensity (Bordeaux 2022 = 497mm).
+    // Provided it's not a severe drought (< 250mm).
+    if (rainfall > 300 && rainfall < 600) {
+        score += 10; // Concentration Bonus
+    }
+
     // --- PHASE 2: RIPENING (The Core Quality Driver) ---
     // GDD (Heat Sum)
     // 2022 was > 2100. Modern vintages are hotter.
-    // We need to reward Heat broadly, but penalize extreme scorching without water?
-    // Actually, great vintages are usually hot.
-    if (gdd > 1800) score += 25; // Massive structure
-    else if (gdd > 1600) score += 20; // Powerful
-    else if (gdd > 1400) score += 15; // Ripe
-    else if (gdd > 1250) score += 5; // Balanced
+    if (gdd > 1900) score += 35; // Ultra-Solar (Legendary potential)
+    else if (gdd > 1700) score += 25; // Massive structure
+    else if (gdd > 1500) score += 15; // Ripe
+    else if (gdd > 1300) score += 5; // Balanced
     else if (gdd < 1000) score -= 15; // Unripe
-    else if (gdd < 1150) score -= 5;
 
     // Heat Spikes (>35C) - Only penalize if excessive (>15 days)
     if (season.heatSpikes > 15) score -= 5;
@@ -88,19 +92,21 @@ export function calculateGrapeyearScore(metrics: AdvancedVintageMetrics): { scor
     if (season.diurnalRange > 13) score += 5;
 
     // Sunshine Bonus (Photosynthesis)
-    if (sunshineHours > 2200) score += 5;
+    if (sunshineHours >= 2000) score += 5; // Adjusted threshold
+    else if (sunshineHours < 1600 && sunshineHours > 0) score -= 5;
 
 
     // --- PHASE 3: HARVEST (The Risk) ---
     // Rain at harvest = Dilution/Rot (Quality Killer).
-    // This is the most important penalty.
     // < 20mm: Dry/Perfect (+10)
     // > 80mm: Bad (-15)
-    // > 120mm: Disaster (-25)
     if (harvest.rainMm < 20) score += 10;
     else if (harvest.rainMm > 120) score -= 25;
     else if (harvest.rainMm > 80) score -= 15;
-    else if (harvest.rainMm > 50) score -= 5;
+    // Removed the "small rain" penalty (-5 for >50mm) to be more forgiving of minor showers.
+
+    // Harvest Heatwaves (Stewed fruit risk)
+    if (harvest.heatwaveDays > 5) score -= 3;
 
     // Harvest Heatwaves (Stewed fruit risk)
     if (harvest.heatwaveDays > 5) score -= 3;

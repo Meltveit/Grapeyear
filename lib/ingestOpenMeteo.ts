@@ -8,18 +8,8 @@ interface DailyWeather {
     temperature_2m_max: number[];
     temperature_2m_min: number[];
     precipitation_sum: number[];
+    sunshine_duration: number[]; // Added missing field
 }
-
-interface StoryMetrics {
-    flowering: { status: 'Excellent' | 'Good' | 'Average' | 'Poor'; rainMm: number; avgTemp: number };
-    harvest: { conditions: 'Dry' | 'Wet' | 'Mixed'; rainMm: number; heatwaveDays: number };
-    growingSeason: { heatSpikes: number; frostEvents: number; diurnalRange: number; droughtStress: boolean };
-}
-
-// Helper: Determine Hemisphere based on Latitude
-// (Northern: Lat > 0, Southern: Lat < 0)
-// Northern Flowering: Late May/June (Weeks 22-26). Harvest: Sept/Oct (Weeks 36-42)
-// Southern Flowering: Nov/Dec (Weeks 46-50). Harvest: March/April (Weeks 10-16)
 
 // ... imports
 
@@ -49,22 +39,8 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
     // Iterate Years
     for (let year = startYear; year <= endYear; year++) {
         // Slice Data for this Year
-        // Find start/end index in data.daily.time
-        // This is efficient enough for 45 years.
         const yStartStr = `${year}-01-01`;
-        const yEndStr = `${year}-12-31`; // Simplified for Northern. Southern needs overlap logic, but for bulk ingest let's keep it simple first or replicate the logic.
-
-        // Reuse existing logic? 
-        // calculateMetrics expects a Saved "DailyWeather" object.
-        // Let's create a subset object.
-
-        let subsetStartIndex = -1;
-        let subsetEndIndex = -1;
-
-        // Optimized search? Time is ISO sorted.
-        // subsetStartIndex = data.daily.time.indexOf(yStartStr);
-        // subsetEndIndex = data.daily.time.indexOf(yEndStr);
-        // Actually, for Southern hemisphere logic (July-June), we need to slice across boundaries.
+        const yEndStr = `${year}-12-31`;
 
         let sliceStart = `${year}-01-01`;
         let sliceEnd = `${year}-12-31`;
@@ -78,7 +54,6 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
         const eIdx = data.daily.time.indexOf(sliceEnd);
 
         if (sIdx === -1 || eIdx === -1) {
-            // console.warn(`Missing data for ${year} (Range: ${sliceStart} to ${sliceEnd})`);
             continue;
         }
 
@@ -86,18 +61,18 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
             time: data.daily.time.slice(sIdx, eIdx + 1),
             temperature_2m_max: data.daily.temperature_2m_max.slice(sIdx, eIdx + 1),
             temperature_2m_min: data.daily.temperature_2m_min.slice(sIdx, eIdx + 1),
-            precipitation_sum: data.daily.precipitation_sum.slice(sIdx, eIdx + 1)
+            precipitation_sum: data.daily.precipitation_sum.slice(sIdx, eIdx + 1),
+            sunshine_duration: data.daily.sunshine_duration.slice(sIdx, eIdx + 1) // FIXED: Added Missing Field
         };
 
         const metrics = calculateMetrics(dailySubset, isNorthern, year);
 
-        // Calculate Score & Quality (using shared logic)
         // Calculate Score & Quality (using Scientific Phase Model)
         // Match AdvancedVintageMetrics interface
         const advancedMetrics = {
             gdd: metrics.growingSeason.gdd,
             rainfall: metrics.growingSeason.rainfall,
-            sunshineHours: metrics.growingSeason.sunshineHours || 1800, // Default if 0
+            sunshineHours: metrics.growingSeason.sunshineHours || 1500, // Reduced default fallback to Neutral
             frostDays: metrics.growingSeason.frostEvents,
             regionName: region.name,
             year: year,
