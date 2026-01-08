@@ -62,7 +62,8 @@ const WinerySchema = new mongoose.Schema({
         type: String, // Red, White, Sparkling
         varieties: [String],
         description: String,
-        imageUrl: String
+        imageUrl: String,
+        vintages: [Number] // e.g. [2018, 2019, 2020, 2021]
     }],
     createdAt: {
         type: Date,
