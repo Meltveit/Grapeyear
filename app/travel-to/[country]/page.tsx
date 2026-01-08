@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { TOP_REGIONS } from '@/lib/constants';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import DestinationSelector from '@/components/DestinationSelector';
 
 export async function generateMetadata({ params }: { params: Promise<{ country: string }> }) {
     const { country } = await params;
@@ -55,6 +56,11 @@ export default async function CountryTravelPage({ params }: { params: Promise<{ 
                     <p className="text-xl text-gray-300">Select a region to start planning.</p>
                 </div>
             </header>
+
+            {/* Country Picker (Persistent) */}
+            <div className="-mt-10 relative z-20 px-4">
+                <DestinationSelector countries={Array.from(new Set(TOP_REGIONS.map(r => r.country))).sort()} />
+            </div>
 
             {/* Region Grid */}
             <section className="container mx-auto px-4 py-16">

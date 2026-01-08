@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { TOP_REGIONS } from '@/lib/constants';
 import { Map, Compass, ArrowRight } from 'lucide-react';
+import DestinationSelector from '@/components/DestinationSelector';
 
 export const metadata = {
     title: 'Wine Travel Guides | Grapeyear',
@@ -42,23 +43,10 @@ export default function TravelHub() {
                 </div>
             </div>
 
-            {/* Country Picker */}
-            <section className="container mx-auto px-4 -mt-10 relative z-20">
-                <div className="bg-[#111] border border-white/10 rounded-2xl p-8 shadow-2xl">
-                    <h2 className="text-center text-gray-400 uppercase tracking-widest text-sm mb-6">Select a Destination</h2>
-                    <div className="flex flex-wrap justify-center gap-3">
-                        {countries.map(country => (
-                            <Link
-                                key={country}
-                                href={`/travel-to/${country.toLowerCase().replace(/ /g, '-')}`}
-                                className="px-6 py-3 rounded-full bg-white/5 hover:bg-amber-500/20 hover:text-amber-300 border border-white/10 hover:border-amber-500/50 transition-all duration-300 font-playfair"
-                            >
-                                {country}
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            </section>
+
+            {/* Country Picker - Client Component */}
+            <DestinationSelector countries={countries} />
+
 
             {/* Featured Regions */}
             <section className="py-24 container mx-auto px-4">
