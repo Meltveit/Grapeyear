@@ -25,13 +25,13 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 export default async function CountryVineyardsPage({ params }: PageParams) {
     const { country } = await params;
 
-    // Clean up country code check
-    const normalizedCountryCode = country.toLowerCase();
+    // Clean up country code check (Handle slugs like "south-africa")
+    const normalizedCountryCode = country.toLowerCase().replace(/-/g, ' ');
 
     // Filter regions belonging to this country (match Code OR Name)
     const regions = TOP_REGIONS.filter(
-        r => r.countryCode.toLowerCase() === normalizedCountryCode ||
-            r.country.toLowerCase() === normalizedCountryCode
+        r => r.countryCode.toLowerCase() === country.toLowerCase() ||
+            r.country.toLowerCase() === normalizedCountryCode.toLowerCase()
     );
 
     if (!regions.length) {
