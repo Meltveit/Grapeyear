@@ -35,8 +35,7 @@ export async function ingestRegionHistory(regionId: string, startYear: number, e
     const startDate = `${startYear}-01-01`;
     const endDate = `${endYear}-12-31`;
 
-    const apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${long}&start_date=${startDate}&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
-
+    const apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${long}&start_date=${startDate}&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,sunshine_duration&timezone=auto`;
     console.log(`Fetching history for ${region.name} (${startYear}-${endYear})...`);
     const res = await fetch(apiUrl);
     if (!res.ok) throw new Error(`Open-Meteo Failed: ${res.statusText}`);
@@ -180,12 +179,14 @@ function calculateMetrics(daily: DailyWeather, isNorthern: boolean, year: number
     }
 
     // Initialize Accumulators
+    // Initialize Accumulators
     let gdd = 0;
     let totalRain = 0;
     let tempSum = 0;
     let heatSpikes = 0;
     let frostEvents = 0;
     let diurnalSum = 0;
+    let sunshineSeconds = 0; // Added accumulator
     let count = 0;
 
     // Phase Stats
@@ -198,15 +199,7 @@ function calculateMetrics(daily: DailyWeather, isNorthern: boolean, year: number
 
 
     // Growing Season Definition
-    // Northern: Apr 1 (Day 90) - Oct 31 (Day 304)
-    // Southern: Oct 1 (Day 273) - Apr 30 (Day 120 next year - wrapped)
-    // Actually, simply define start/end months (0-indexed)
-
-    // We already sliced the data to define "The Year".
-    // Northern: Jan-Dec. Season: Apr-Oct.
-    // Southern: Jul-Jun. Season: Oct-Apr.
-
-    // Let's use month check.
+    // ... (logic) ...
 
     daily.time.forEach((t, i) => {
         const date = new Date(t);
@@ -218,18 +211,15 @@ function calculateMetrics(daily: DailyWeather, isNorthern: boolean, year: number
             // Apr (3) to Oct (9)
             if (month >= 3 && month <= 9) inSeason = true;
         } else {
-            // Oct (9) to Apr (3)
-            // Since data runs Jul-Jun, this handles the wrapping naturally?
-            // Yes, Jul-Jun data. 
-            // Oct, Nov, Dec (9,10,11) -> Yes
-            // Jan, Feb, Mar, Apr (0,1,2,3) -> Yes
-            // May, Jun, Jul, Aug, Sep (4,5,6,7,8) -> No
+            // Southern: Oct (9) to Apr (3)
             if (month >= 9 || month <= 3) inSeason = true;
         }
 
         const max = daily.temperature_2m_max[i];
         const min = daily.temperature_2m_min[i];
         const rain = daily.precipitation_sum[i];
+        // Safely access sunshine (might be undefined if API fails or old data)
+        const sun = (daily as any).sunshine_duration ? (daily as any).sunshine_duration[i] : 0;
         const mean = (max + min) / 2;
 
         // Growing Season Stats ONLY
@@ -240,13 +230,14 @@ function calculateMetrics(daily: DailyWeather, isNorthern: boolean, year: number
             totalRain += rain;
             tempSum += mean;
             if (max > 35) heatSpikes++;
-            // Frost only matters in Spring/Autumn really, but counting all season is better than winter
+            // Frost only matters in Spring/Autumn really
             if (min < 0) frostEvents++;
             diurnalSum += (max - min);
+            if (sun !== null && sun !== undefined) sunshineSeconds += sun; // Accumulate Sun
             count++;
         }
 
-        // Flowering Phase (Keep logic, but ensure it aligns)
+        // Flowering Phase 
         if (i >= floweringStart && i <= floweringEnd) {
             floweringRain += rain;
             floweringTempSum += mean;
@@ -278,6 +269,7 @@ function calculateMetrics(daily: DailyWeather, isNorthern: boolean, year: number
             rainfall: Math.round(totalRain),
             avgTemp: Math.round(tempSum / count),
             diurnalRange: Math.round((diurnalSum / count) * 10) / 10,
+            sunshineHours: Math.round(sunshineSeconds / 3600), // Convert Seconds to Hours
             heatSpikes,
             frostEvents
         },
@@ -296,7 +288,7 @@ function calculateMetrics(daily: DailyWeather, isNorthern: boolean, year: number
                 heatSpikes,
                 frostEvents,
                 diurnalRange: Math.round((diurnalSum / count) * 10) / 10,
-                droughtStress: totalRain < 200 // simple threshold
+                droughtStress: totalRain < 200
             }
         }
     };

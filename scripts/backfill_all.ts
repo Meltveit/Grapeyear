@@ -19,7 +19,7 @@ function delay(ms: number) {
 }
 
 async function run() {
-    console.log("Starting Optimized Batch Backfill (1980-2024)...");
+    console.log("Starting Optimized Batch Backfill (1960-2024)...");
     await connectDirectly();
 
     // 1. Get All Regions
@@ -53,7 +53,7 @@ async function run() {
             console.error(`\nFailed Region ${region.name}: ${e.message}`);
         }
         // Delay between regions to be safe (60 seconds)
-        await delay(120000);
+        await delay(30000);
     }
 
     console.log("\n\nBackfill Complete!");
