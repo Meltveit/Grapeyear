@@ -251,7 +251,7 @@ export default async function Home() {
       <section className="py-20 bg-white/5 border-y border-white/10">
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="p-6">
-            <div className="text-4xl font-bold text-purple-500 mb-2">20+</div>
+            <div className="text-4xl font-bold text-purple-500 mb-2">65+</div>
             <div className="text-gray-400 uppercase tracking-widest text-sm">Years of History</div>
           </div>
           <div className="p-6">
