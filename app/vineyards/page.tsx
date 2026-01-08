@@ -64,7 +64,7 @@ export default function VineyardDirectory() {
                     {uniqueCountries.map((country) => (
                         <Link
                             key={country.name}
-                            href={`/vineyards/${country.name.toLowerCase()}`}
+                            href={`/vineyards/${country.name.toLowerCase().replace(/ /g, '-')}`}
                             className="group relative h-[300px] rounded-2xl overflow-hidden border border-white/10"
                         >
                             <div className="relative h-full w-full bg-gray-900">
