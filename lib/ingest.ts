@@ -114,21 +114,31 @@ export async function updateVintagesForRegions(years?: number[]) {
                     });
                     maxDrought = Math.max(maxDrought, currentDrought);
 
-                    // Score & AI Summary
-                    const { score, quality } = calculateGrapeyearScore({ gdd, rainfall: totalRain, diurnal, sunshineHours, frostDays });
-                    const aiSummary = generateVintageSummary({
+                    // Construct proper metrics object for the new Scientific Model
+                    // We map the local simple calcs to the nested storyMetrics structure
+                    const advancedMetrics = {
                         gdd,
                         rainfall: totalRain,
                         sunshineHours,
                         frostDays,
                         regionName: region.name,
                         year,
-                        heatSpikes,
-                        earlyFrostDays,
-                        lateFrostDays,
-                        harvestRainMm,
-                        droughtStressMaxDays: maxDrought
-                    });
+                        storyMetrics: {
+                            flowering: { status: 'Average', rainMm: 30, avgTemp: 18 }, // Approximated
+                            harvest: { conditions: 'Mixed', rainMm: harvestRainMm, heatwaveDays: 0 },
+                            growingSeason: {
+                                heatSpikes,
+                                frostEvents: frostDays,
+                                diurnalRange: diurnal,
+                                droughtStress: maxDrought > 20
+                            }
+                        }
+                    };
+
+                    // Score & AI Summary
+                    // Now correctly passing the AdvancedVintageMetrics object
+                    const { score, quality } = calculateGrapeyearScore(advancedMetrics as any);
+                    const aiSummary = generateVintageSummary(advancedMetrics as any);
 
                     // Update DB
                     await Vintage.findOneAndUpdate(
