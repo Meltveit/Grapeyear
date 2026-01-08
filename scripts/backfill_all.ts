@@ -53,7 +53,7 @@ async function run() {
             console.error(`\nFailed Region ${region.name}: ${e.message}`);
         }
         // Delay between regions to be safe (60 seconds)
-        await delay(30000);
+        await delay(600000);
     }
 
     console.log("\n\nBackfill Complete!");
