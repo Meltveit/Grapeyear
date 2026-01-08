@@ -51,6 +51,19 @@ const WinerySchema = new mongoose.Schema({
         enum: ['Basic', 'Premium'], // Premium = "Recommended" / Top of list
         default: 'Basic',
     },
+    status: {
+        type: String,
+        enum: ['draft', 'published', 'archived'],
+        default: 'published', // Default to published for legacy/manual compatibility
+        index: true
+    },
+    wines: [{
+        name: String,
+        type: String, // Red, White, Sparkling
+        varieties: [String],
+        description: String,
+        imageUrl: String
+    }],
     createdAt: {
         type: Date,
         default: Date.now,
