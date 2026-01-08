@@ -66,7 +66,7 @@ export default async function CountryVineyardsPage({ params }: PageParams) {
                     {regions.map((region) => (
                         <Link
                             key={region.slug}
-                            href={`/vineyards/${normalizedCountryCode}/${region.slug}`}
+                            href={`/vineyards/${country.toLowerCase().replace(/ /g, '-')}/${region.slug}`}
                             className="group block bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl overflow-hidden transition-all duration-300"
                         >
                             <div className="h-48 overflow-hidden relative">
@@ -107,7 +107,7 @@ export default async function CountryVineyardsPage({ params }: PageParams) {
                                 return (
                                     <Link
                                         key={c}
-                                        href={`/vineyards/${c.toLowerCase()}`}
+                                        href={`/vineyards/${c.toLowerCase().replace(/ /g, '-')}`}
                                         className="block p-4 bg-white/5 rounded-xl text-center hover:bg-white/10 transition-colors border border-white/5"
                                     >
                                         <span className="text-lg font-playfair">{c}</span>
