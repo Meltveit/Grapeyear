@@ -57,7 +57,7 @@ export default async function RegionVineyardsPage({ params }: PageParams) {
                 <Breadcrumbs
                     items={[
                         { label: 'Vineyards', href: '/vineyards' },
-                        { label: countryName, href: `/vineyards/${country.toLowerCase()}` },
+                        { label: countryName, href: `/vineyards/${country.toLowerCase().replace(/ /g, '-')}` },
                         { label: regionConfig.name }
                     ]}
                 />
