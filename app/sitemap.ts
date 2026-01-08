@@ -7,93 +7,89 @@ import { TOP_REGIONS } from '@/lib/constants';
 
 const BASE_URL = 'https://www.grapeyear.com';
 
-export async function generateSitemaps() {
-    return [
-        { id: 'main' },
-        { id: 'regions' },
-        { id: 'wineries' },
-        { id: 'vintages' },
-    ];
-}
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    const routes: MetadataRoute.Sitemap = [];
 
-export default async function sitemap({ id }: { id: string }): Promise<MetadataRoute.Sitemap> {
+    // 1. MAIN STATIC ROUTES (No DB Needed)
+    const staticRoutes = [
+        '',
+        '/about',
+        '/contact',
+        '/privacy',
+        '/vineyards',
+        '/grapes',
+        '/guides/making-wine',
+    ].map((route) => ({
+        url: `${BASE_URL}${route}`,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 1,
+    }));
+
+    routes.push(...staticRoutes);
+
+    // 2. DYNAMIC ROUTES (Try DB)
     try {
-        // Ensure DB Connection
         await dbConnect();
 
-        if (id === 'main') {
-            const routes = [
-                '',
-                '/about',
-                '/contact',
-                '/privacy',
-                '/vineyards',
-                '/grapes',
-                '/guides/making-wine', // Add other guides if dynamic or static list
-            ].map((route) => ({
-                url: `${BASE_URL}${route}`,
-                lastModified: new Date(),
-                changeFrequency: 'daily' as const,
-                priority: 1,
-            }));
-            return routes;
-        }
-
-        if (id === 'regions') {
-            // Fetch All Regions from DB
-            const regions = await Region.find({}).select('slug country updatedAt').lean();
-            if (!regions) return [];
-
-            // 1. Country Pages (Dynamic based on existing regions)
+        // Regions
+        const regions = await Region.find({}).select('slug country updatedAt').lean();
+        if (regions && regions.length > 0) {
             const uniqueCountries = Array.from(new Set(regions.map((r: any) => r.country ? r.country.toLowerCase().replace(/ /g, '-') : 'unknown')));
+
+            // Country Pages
             const countryRoutes = uniqueCountries.map(country => ({
                 url: `${BASE_URL}/vineyards/${country}`,
                 lastModified: new Date(),
                 changeFrequency: 'weekly' as const,
                 priority: 0.8,
             }));
+            routes.push(...countryRoutes);
 
-            // 2. Region Pages
+            // Region Pages
             const regionRoutes = regions.map((region: any) => ({
                 url: `${BASE_URL}/vineyards/${region.country.toLowerCase().replace(/ /g, '-')}/${region.slug}`,
                 lastModified: region.updatedAt || new Date(),
                 changeFrequency: 'weekly' as const,
                 priority: 0.9,
             }));
-
-            return [...countryRoutes, ...regionRoutes];
+            routes.push(...regionRoutes);
         }
 
-        if (id === 'wineries') {
-            const wineries = await Winery.find({}).select('slug updatedAt').lean();
-            return wineries.map((winery: any) => ({
+        // Wineries
+        const wineries = await Winery.find({}).select('slug updatedAt').lean();
+        if (wineries && wineries.length > 0) {
+            const wineryRoutes = wineries.map((winery: any) => ({
                 url: `${BASE_URL}/wineries/${winery.slug}`,
                 lastModified: winery.updatedAt || new Date(),
                 changeFrequency: 'weekly' as const,
                 priority: 0.7,
             }));
+            routes.push(...wineryRoutes);
         }
 
-        if (id === 'vintages') {
-            // Optimized: Fetch only necessary fields
-            const vintages = await Vintage.find({})
-                .select('year regionId updatedAt')
-                .populate('regionId', 'slug country')
-                .lean();
+        // Vintages
+        const vintages = await Vintage.find({})
+            .select('year regionId updatedAt')
+            .populate('regionId', 'slug country')
+            .lean();
 
-            return vintages
-                .filter((v: any) => v.regionId && v.regionId.slug && v.regionId.country) // Ensure region valid
+        if (vintages && vintages.length > 0) {
+            const vintageRoutes = vintages
+                .filter((v: any) => v.regionId && v.regionId.slug && v.regionId.country)
                 .map((v: any) => ({
                     url: `${BASE_URL}/vintages/${v.regionId.country.toLowerCase().replace(/ /g, '-')}/${v.regionId.slug}/${v.year}`,
                     lastModified: v.updatedAt || new Date(),
                     changeFrequency: 'yearly' as const,
                     priority: 0.6,
                 }));
+            routes.push(...vintageRoutes);
         }
 
-        return [];
     } catch (error) {
-        console.error(`Sitemap generation error for ID ${id}:`, error);
-        return [];
+        console.error("Sitemap DB Error:", error);
+        // We continue and return at least the static routes
     }
+
+    return routes;
 }
