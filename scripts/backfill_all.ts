@@ -55,7 +55,7 @@ async function run() {
             }
         }
         // Delay between regions to be safe (60 seconds)
-        await delay(600000);
+        await delay(30000);
     }
 
     console.log("\n\nBackfill Complete!");
