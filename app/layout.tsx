@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Grapeyear | Visual Climate Intelligence For Wines',
     description: 'Explore wine vintages through the lens of climate data. Objective scores for collectors and investors.',
-    url: 'https://www.grapeyear.com',
+    url: 'https://grapeyear.com',
     siteName: 'Grapeyear',
     images: [
       {
@@ -34,13 +34,14 @@ export const metadata: Metadata = {
     description: 'Explore wine vintages through the lens of climate data.',
     images: ['https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200'],
   },
-  metadataBase: new URL('https://www.grapeyear.com'),
+  metadataBase: new URL('https://grapeyear.com'),
   alternates: {
     canonical: './',
   },
   verification: {
     other: {
       'msvalidate.01': '6FC8D94184E9CAFA23F875DC5E5E6D3F',
+      'ezoic-site-verification': 'xQaHXRfMuXQyTxlXdWQZD4kFT0srG2',
     },
   },
 };
@@ -54,10 +55,10 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Grapeyear',
-    url: 'https://www.grapeyear.com',
+    url: 'https://grapeyear.com',
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://www.grapeyear.com/search?q={search_term_string}',
+      target: 'https://grapeyear.com/search?q={search_term_string}',
       'query-input': 'required name=search_term_string'
     }
   };
@@ -67,6 +68,7 @@ export default function RootLayout({
       <head>
         {/* Preconnect to external origins for better performance */}
         <meta name="google-adsense-account" content="ca-pub-5652295648800611"></meta>
+        <meta name="ezoic-site-verification" content="xQaHXRfMuXQyTxlXdWQZD4kFT0srG2" />
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="preconnect" href="https://api.open-meteo.com" />
