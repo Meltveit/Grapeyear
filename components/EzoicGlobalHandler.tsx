@@ -9,7 +9,7 @@ declare global {
     interface Window {
         ezstandalone?: {
             cmd: any[];
-            showAds: (ids?: number[]) => void;
+            showAds: (...ids: number[]) => void;
             hasPlaceholder: (id: number) => boolean;
             define: (...ids: number[]) => void;
         };

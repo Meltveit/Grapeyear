@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Grape } from 'lucide-react';
+import EzoicPlaceholder from './EzoicPlaceholder';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -56,7 +57,10 @@ export default function Footer() {
                     </ul>
                 </div>
 
+
             </div>
-        </footer>
+
+            <EzoicPlaceholder id={103} />
+        </footer >
     );
 }
